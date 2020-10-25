@@ -1,0 +1,6 @@
+<FilesMatch "\.(pm|dat|wiki|log|~)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+
