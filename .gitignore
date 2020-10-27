@@ -1,5 +1,6 @@
+tmp/
+# Emacs auto save files
 *~
-# Emacs auto save file
 \#*#
 .~lock.*#
 

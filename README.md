@@ -2,7 +2,12 @@
 
 [FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi) is a Wiki clone written in Perl.
 
-> **CAUTION:** This Dockerfile is to launch FSWiki that is used only from a local web browser. Additional security considerations would be necessary to expose it to the public network, such as https use, load-balancing and so on.
+This Dockerfile is to launch FSWiki that is used only from a local web browser.
+
+> **CAUTION:**
+To expose it to the public network, additional security considerations
+would be necessary including https use, load-balancing, permissions
+and so on.
 
 ## How to use
 
@@ -12,32 +17,67 @@ Run the following commands on a shell terminal.
 
 ~~~shell
 git clone https://github.com/KazKobara/dockerfile_fswiki_local.git .
+cd dockerfile_fswiki_local
 ~~~
 
 ### 2. Build image
 
 ~~~shell
 cd dockerfile_fswiki_local
-docker build -t fswiki_local:latest .
+~~~
+
+If necessary, edit `FSWIKI_PLATFORM` and `FSWIKI_VERSION` in `./docker_build.sh`, then run:
+
+~~~shell
+./docker_build.sh
 ~~~
 
 ### 3. Run server for local use
 
-1. Edit FSWIKI_DATA_ROOT in ./run_fswiki_local.sh so that it can be the parent directory of data/, attach/, config/ and log/ of FSWiki.
-2. Run `./run_fswiki_local.sh`
-3. Browser access to `http//localhost:8365/`
+Edit `FSWIKI_DATA_ROOT` in ./run_fswiki_local.sh so that it can be the parent directory of `data/`, `attach/`, `config/` and `log/` of FSWiki, then run:
+
+~~~shell
+./run_fswiki_local.sh
+~~~
+
+Browser access to `http//localhost:8365/`
 
 ### Stop and remove the process
 
 ~~~shell
-docker stop fswiki_local && docker rm fswiki_local
+docker stop fswiki_alpine_local && docker rm fswiki_alpine_local
 ~~~
+
+or change `alpine` according to `FSWIKI_PLATFORM` in `./docker_build.sh`.
 
 ### Remove the image
 
 ~~~shell
-docker rmi fswiki_local:latest
+docker rmi fswiki_alpine_local:latest
 ~~~
 
+or change `alpine` according to `FSWIKI_PLATFORM` in `./docker_build.sh`.
+
+## Docker Image Sizes
+
+|FSWIKI_PLATFORM|kernel|httpd|perl|Image Size[MB]|
+| :--- | ---: | ---: | ---: | ---: |
+|alpine|4.19.76|2.4.46|5.30.3|67.9|
+|ubuntu|4.19.76|2.4.43|5.28.1|247.0|
 ---
-THIS FILE COMES WITH ABSOLUTELY NO WARRANTY.
+
+These info can be obtained by:
+
+~~~shell
+docker images | grep fswiki_
+docker exec fswiki_alpine_local sh -c "uname -r; httpd -v; perl -v"
+docker exec fswiki_ubuntu_local sh -c "uname -r; httpd -v; perl -v"
+~~~
+
+## CHANGELOG
+
+Version: 0.0.1 Changes:
+
+- Dockerfile for alpine is added.
+
+## [LICENSE](./LICENSE)
