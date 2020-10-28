@@ -17,7 +17,6 @@ Run the following commands on a shell terminal.
 
 ~~~shell
 git clone https://github.com/KazKobara/dockerfile_fswiki_local.git .
-cd dockerfile_fswiki_local
 ~~~
 
 ### 2. Build image
@@ -62,8 +61,8 @@ or change `alpine` according to `FSWIKI_PLATFORM` in `./docker_build.sh`.
 
 |FSWIKI_PLATFORM|kernel|httpd|perl|Image Size[MB]|
 | :--- | ---: | ---: | ---: | ---: |
-|alpine|4.19.76|2.4.46|5.30.3|67.9|
-|ubuntu|4.19.76|2.4.43|5.28.1|247.0|
+|alpine|4.19.76|2.4.46|5.30.3|62.1|
+|ubuntu|4.19.76|2.4.43|5.28.1|243.0|
 ---
 
 These info can be obtained by:
@@ -75,9 +74,5 @@ docker exec fswiki_ubuntu_local sh -c "uname -r; httpd -v; perl -v"
 ~~~
 
 ## CHANGELOG
-
-Version: 0.0.1 Changes:
-
-- Dockerfile for alpine is added.
 
 ## [LICENSE](./LICENSE)

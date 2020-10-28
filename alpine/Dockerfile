@@ -22,14 +22,14 @@ LABEL description="FSWiki for local use only"
 ARG fswiki_tmp_dir
 ARG fswiki_version
 ENV DEBCONF_NOWARNINGS yes
-# shadow is for usermod
 RUN apk update \
     && apk add \
         perl \
         perl-cgi-fast \
-        shadow \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org
-COPY ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/apache2/htdocs
+# httpd subprocesses are run as daemon user. 
+# ADD/COPY --chown is available at Docker 17.09 and later.
+COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/apache2/htdocs
 
 # Edit here to allow access from other or all IP addresses.
 # Below only allows from 172.17.0.1 assigned to the docker default gateway.
@@ -42,10 +42,11 @@ RUN sed -r -i.bk \
     /usr/local/apache2/conf/httpd.conf
 
 WORKDIR /usr/local/apache2/htdocs
-COPY ./favicon.ico .
+COPY --chown=daemon:daemon ./favicon.ico .
 RUN ./setup.sh
-# httpd subprocesses are run as daemon user, so 
-RUN usermod -aG root daemon && chmod -R g+wx lib backup pdf
+# TODO: owner, group and permissions should be harmonized with FSWiki setup.sh
+#       and docker -v.
+RUN chown -R daemon:daemon ./pdf ./backup ./data ./attach ./config ./log
 
 # Due to "AllowOverride None", append .htaccess to httpd.conf.
 RUN cat .htaccess >> /usr/local/apache2/conf/httpd.conf
