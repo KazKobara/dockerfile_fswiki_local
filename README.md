@@ -13,17 +13,39 @@ and so on.
 
 Run the following commands on a shell terminal.
 
-### 1. Get Dockerfile
+### 1. Get Dockerfile etc and enter the folder
 
 ~~~shell
 git clone https://github.com/KazKobara/dockerfile_fswiki_local.git .
 ~~~
 
-### 2. Build image
-
 ~~~shell
 cd dockerfile_fswiki_local
 ~~~
+
+For the following steps, either docker-compose or shell scripts can be used.
+
+### 2. When using docker-compose
+
+Edit `VOLUNE_*` and so on in docker-compose.yml, then run:
+
+~~~shell
+docker-compose up
+~~~
+
+Access `http//localhost:8365/` with a web browser.
+
+To stop,
+
+~~~shell
+docker-compose down
+~~~
+
+or [see](https://docs.docker.com/compose/reference/down/).
+
+### 2. When using shell scripts
+
+#### 2.1 Build image
 
 If necessary, edit `FSWIKI_PLATFORM` and `FSWIKI_VERSION` in `./docker_build.sh`, then run:
 
@@ -31,7 +53,7 @@ If necessary, edit `FSWIKI_PLATFORM` and `FSWIKI_VERSION` in `./docker_build.sh`
 ./docker_build.sh
 ~~~
 
-### 3. Run server for local use
+#### 2.2 Run server for local use
 
 Edit `FSWIKI_DATA_ROOT` in ./run_fswiki_local.sh so that it can be the parent directory of `data/`, `attach/`, `config/` and `log/` of FSWiki, then run:
 
@@ -39,9 +61,9 @@ Edit `FSWIKI_DATA_ROOT` in ./run_fswiki_local.sh so that it can be the parent di
 ./run_fswiki_local.sh
 ~~~
 
-Browser access to `http//localhost:8365/`
+Access `http//localhost:8365/` with a web browser.
 
-### Stop and remove the process
+#### Stop and remove the process
 
 ~~~shell
 docker stop fswiki_alpine_local && docker rm fswiki_alpine_local
@@ -49,7 +71,7 @@ docker stop fswiki_alpine_local && docker rm fswiki_alpine_local
 
 or change `alpine` according to `FSWIKI_PLATFORM` in `./docker_build.sh`.
 
-### Remove the image
+#### Remove the image
 
 ~~~shell
 docker rmi fswiki_alpine_local:latest
@@ -69,9 +91,10 @@ These info can be obtained by:
 
 ~~~shell
 docker images | grep fswiki_
-docker exec fswiki_alpine_local sh -c "uname -r; httpd -v; perl -v"
-docker exec fswiki_ubuntu_local sh -c "uname -r; httpd -v; perl -v"
+docker exec <container_name> sh -c "uname -r; httpd -v; perl -v"
 ~~~
+
+where <container_name> is `fswiki_alpine_local_dc` or   `fswiki_ubuntu_local_dc` for docker-compose versions, and `fswiki_alpine_local` or   `fswiki_ubuntu_local` for shell script versions.
 
 ## CHANGELOG
 

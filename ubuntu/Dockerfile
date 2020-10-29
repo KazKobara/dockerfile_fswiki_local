@@ -19,6 +19,7 @@ LABEL maintainer="Kaz KOBARA <M-kaz-ml@aist.go.jp>"
 LABEL version="${tag_version}"
 LABEL description="FSWiki for local use only"
 
+ARG require_ip
 ARG fswiki_tmp_dir
 ARG fswiki_version
 ENV DEBCONF_NOWARNINGS yes
@@ -36,12 +37,13 @@ COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/ap
 
 # Edit here to allow access from other or all IP addresses.
 # Below only allows from 172.17.0.1 assigned to the docker default gateway.
+# For docker-composer, loosen 172.17.0.1 to 172.
 RUN sed -r -i.bk \
-    's/Require all granted/Require all denied\n    Require ip 172.17.0.1/g; \
+    "s/Require all granted/Require all denied\n    Require ip ${require_ip}/g; \
      s/#LoadModule cgid_module/LoadModule cgid_module/g; \
      s/DirectoryIndex index.html/DirectoryIndex wiki.cgi/g; \
      s/Options Indexes FollowSymLinks/Options FollowSymLinks ExecCGI/g; \
-     s/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi/g' \
+     s/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi/g" \
     /usr/local/apache2/conf/httpd.conf
 
 WORKDIR /usr/local/apache2/htdocs

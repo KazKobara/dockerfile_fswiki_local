@@ -6,8 +6,9 @@ FSWIKI_PLATFORM=alpine
 FSWIKI_VERSION=3_6_5
 
 ##
+REQUIRE_IP=172.17.0.1
 TAG_VERSION=0.0.0
-FSWIKI_TMP_DIR=tmp  # path from ../.
+FSWIKI_TMP_DIR=tmp
 FSWIKI_SOURCE_DIR="wiki${FSWIKI_VERSION}"
 FSWIKI_ZIP="${FSWIKI_SOURCE_DIR}.zip"
 
@@ -25,7 +26,9 @@ pushd `pwd`
 popd
 echo "=== docker building ==="
 pwd
-docker build -f ./${FSWIKI_PLATFORM}/Dockerfile -t fswiki_${FSWIKI_PLATFORM}_local:latest . \
-       	--build-arg tag_version="${TAG_VERSION}" \
+docker build -f ./${FSWIKI_PLATFORM}/Dockerfile \
+	-t fswiki_${FSWIKI_PLATFORM}_local:latest . \
+    --build-arg tag_version="${TAG_VERSION}" \
 	--build-arg fswiki_version="${FSWIKI_VERSION}" \
-	--build-arg fswiki_tmp_dir="${FSWIKI_TMP_DIR}"
+	--build-arg fswiki_tmp_dir="${FSWIKI_TMP_DIR}" \
+	--build-arg require_ip="${REQUIRE_IP}
