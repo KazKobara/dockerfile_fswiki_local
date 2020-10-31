@@ -1,33 +1,6 @@
 version: '3.7'
 
-# -------------- Edit Here ---------------
-# Choose alpine or ubuntu
-x-var: &DOCKER_FILE
-    "./alpine/Dockerfile"
-    # "./ubuntu/Dockerfile"
-x-var: &IMAGE_CONTAINER_NAME
-    "fswiki_alpine_local_dc"
-    # "fswiki_ubuntu_local_dc"
-
-# $USER should be set in .env file on Windows.
-x-var: &VOLUME_DATA
-    "c:/Users/$USER/share/wikilocal/data:/usr/local/apache2/htdocs/data"
-x-var: &VOLUME_ATTACH
-    "c:/Users/$USER/share/wikilocal/attach:/usr/local/apache2/htdocs/attach"
-x-var: &VOLUME_CONFIG
-    "c:/Users/$USER/share/wikilocal/config:/usr/local/apache2/htdocs/config"
-x-var: &VOLUME_LOG
-    "c:/Users/$USER/share/wikilocal/log:/usr/local/apache2/htdocs/log"
-
-x-var: &TAG_VERSION
-    "0.0.0"
-x-var: &FSWIKI_VERSION
-    "3_6_5"
-x-var: &FSWIKI_TMP_DIR
-    "tmp"
-
-x-var: &PORTS
-    "8365:80"
+# -------------- Edit .env and Here ---------------
 x-var: &REQUIRE_IP
     # IP or network addresses to be accessed from:
     # docker-compose assigns 172.x or 192.168 to its bridge network using round robin.
@@ -36,21 +9,26 @@ x-var: &REQUIRE_IP
 
 services:
     fswiki_local:
-        container_name: *IMAGE_CONTAINER_NAME
-        image: *IMAGE_CONTAINER_NAME
+        container_name: fswiki_${FSWIKI_PLATFORM}_local_dc
+        image: fswiki_${FSWIKI_PLATFORM}_local_dc:${FSWIKI_VERSION}
         build:
             context: .
-            dockerfile: *DOCKER_FILE
+            dockerfile: "./${FSWIKI_PLATFORM}/Dockerfile"
             args:
                 require_ip: *REQUIRE_IP
-                tag_version: *TAG_VERSION
-                fswiki_version: *FSWIKI_VERSION
-                fswiki_tmp_dir: *FSWIKI_TMP_DIR
+                tag_version: ${TAG_VERSION}
+                fswiki_version: ${FSWIKI_VERSION}
+                fswiki_tmp_dir: ${FSWIKI_TMP_DIR}
         volumes:
-            - *VOLUME_DATA
-            - *VOLUME_ATTACH
-            - *VOLUME_CONFIG
-            - *VOLUME_LOG
+            # Adding "" does not work.
+            - ${FSWIKI_DATA_PREFIX}/${USER}/${FSWIKI_DATA_DIR}/data:/usr/local/apache2/htdocs/data
+            - ${FSWIKI_DATA_PREFIX}/${USER}/${FSWIKI_DATA_DIR}/attach:/usr/local/apache2/htdocs/attach
+            - ${FSWIKI_DATA_PREFIX}/${USER}/${FSWIKI_DATA_DIR}/config:/usr/local/apache2/htdocs/config
+            - ${FSWIKI_DATA_PREFIX}/${USER}/${FSWIKI_DATA_DIR}/log:/usr/local/apache2/htdocs/log
+            #- ${FSWIKI_DATA_ROOT}/data:/usr/local/apache2/htdocs/data
+            #- ${FSWIKI_DATA_ROOT}/attach:/usr/local/apache2/htdocs/attach
+            #- ${FSWIKI_DATA_ROOT}/config:/usr/local/apache2/htdocs/config
+            #- ${FSWIKI_DATA_ROOT}/log:/usr/local/apache2/htdocs/log
         ports:
-            - *PORTS
+            - "${FSWIKI_PORT}:80"
         restart: always

@@ -1,0 +1,6 @@
+# TODO: set an appropriate pattern depending on the usage.
+# <FilesMatch "\.(pm|dat|wiki|log)$">
+<FilesMatch "\.(pm|dat|wiki|log|sh|tmpl|cache|bk|org|old)">
+	deny from all
+</FilesMatch>
+

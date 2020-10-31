@@ -35,20 +35,23 @@ COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/ap
 # Edit here to allow access from other or all IP addresses.
 # Below only allows from 172.17.0.1 assigned to the docker default gateway.
 # For docker-composer, loosen 172.17.0.1 to 172.
+#     s/Options Indexes FollowSymLinks/Options FollowSymLinks ExecCGI/g; \
 RUN sed -r -i.bk \
     "s/Require all granted/Require all denied\n    Require ip ${require_ip}/g; \
      s/#LoadModule cgid_module/LoadModule cgid_module/g; \
      s/DirectoryIndex index.html/DirectoryIndex wiki.cgi/g; \
-     s/Options Indexes FollowSymLinks/Options FollowSymLinks ExecCGI/g; \
+     s/Options Indexes FollowSymLinks/Options ExecCGI/g; \
      s/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi/g" \
     /usr/local/apache2/conf/httpd.conf
 
 WORKDIR /usr/local/apache2/htdocs
-COPY --chown=daemon:daemon ./favicon.ico .
-RUN ./setup.sh
 # TODO: owner, group and permissions should be harmonized with FSWiki setup.sh
 #       and docker -v.
+COPY --chown=daemon:daemon ./data/favicon.ico .
+# To avoid abusing and/or downloading *.sh since .htaccess could not prevent it. 
+RUN chmod 500 ./setup.sh; ./setup.sh; rm -f ./setup.sh
 RUN chown -R daemon:daemon ./pdf ./backup ./data ./attach ./config ./log
 
+COPY ./data/.htaccess .
 # Due to "AllowOverride None", append .htaccess to httpd.conf.
 RUN cat .htaccess >> /usr/local/apache2/conf/httpd.conf

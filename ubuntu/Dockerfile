@@ -47,11 +47,13 @@ RUN sed -r -i.bk \
     /usr/local/apache2/conf/httpd.conf
 
 WORKDIR /usr/local/apache2/htdocs
-COPY --chown=daemon:daemon ./favicon.ico .
-RUN ./setup.sh
 # TODO: owner, group and permissions should be harmonized with FSWiki setup.sh
 #       and docker -v.
+COPY --chown=daemon:daemon ./data/favicon.ico .
+# To avoid abusing and/or downloading *.sh since .htaccess could not prevent it. 
+RUN chmod 500 ./setup.sh; ./setup.sh; rm -f ./setup.sh
 RUN chown -R daemon:daemon ./pdf ./backup ./data ./attach ./config ./log
 
+COPY ./data/.htaccess .
 # Due to "AllowOverride None", append .htaccess to httpd.conf.
 RUN cat .htaccess >> /usr/local/apache2/conf/httpd.conf

@@ -1,34 +1,15 @@
 #!/bin/bash
 
-## Choose FSWIKI_PLATFORM and edit FSWIKI_VERSION.
-FSWIKI_PLATFORM=alpine
-# FSWIKI_PLATFORM=ubuntu
-FSWIKI_VERSION=3_6_5
-
-##
+# IP or network addresses to be accessed from:
+# docker build assigns 172.17.0.x to its bridge network.
 REQUIRE_IP=172.17.0.1
-TAG_VERSION=0.0.0
-FSWIKI_TMP_DIR=tmp
-FSWIKI_SOURCE_DIR="wiki${FSWIKI_VERSION}"
-FSWIKI_ZIP="${FSWIKI_SOURCE_DIR}.zip"
 
-if [ ! -d ${FSWIKI_TMP_DIR} ]; then
-	mkdir ${FSWIKI_TMP_DIR}
-fi
-pushd `pwd`
-	cd ${FSWIKI_TMP_DIR}/
-	if [ ! -e ${FSWIKI_SOURCE_DIR} ]; then
-		if [ ! -e ${FSWIKI_ZIP} ]; then
-			wget https://ja.osdn.net/projects/fswiki/downloads/69263/${FSWIKI_ZIP}
-		fi
-		unzip ./${FSWIKI_ZIP} 
-	fi
-popd
+source ./get_fswiki.sh 
+
 echo "=== docker building ==="
-pwd
-docker build -f ./${FSWIKI_PLATFORM}/Dockerfile \
-	-t fswiki_${FSWIKI_PLATFORM}_local:latest . \
+docker build -f "./${FSWIKI_PLATFORM}/Dockerfile" \
+	-t "fswiki_${FSWIKI_PLATFORM}_local:${FSWIKI_VERSION}" . \
     --build-arg tag_version="${TAG_VERSION}" \
 	--build-arg fswiki_version="${FSWIKI_VERSION}" \
 	--build-arg fswiki_tmp_dir="${FSWIKI_TMP_DIR}" \
-	--build-arg require_ip="${REQUIRE_IP}
+	--build-arg require_ip="${REQUIRE_IP}"

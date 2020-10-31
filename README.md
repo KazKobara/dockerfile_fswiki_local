@@ -23,17 +23,38 @@ git clone https://github.com/KazKobara/dockerfile_fswiki_local.git .
 cd dockerfile_fswiki_local
 ~~~
 
+Edit parameters in the `.env` file.
+
+~~~shell
+vim .env
+~~~
+
 For the following steps, either docker-compose or shell scripts can be used.
+
+If they pop up the following window on Windows, click the "cancel" button to block the access from outside your PC.
+![cancel](./data/warning.png)
 
 ### 2. When using docker-compose
 
-Edit `VOLUNE_*` and so on in docker-compose.yml, then run:
+Download FSWiki under ./tmp/ with:
+
+~~~shell
+./get_fswiki.sh
+~~~
+
+Run,
 
 ~~~shell
 docker-compose up
 ~~~
 
-Access `http//localhost:8365/` with a web browser.
+or on Windows,
+
+~~~shell
+docker-compose.exe up
+~~~
+
+Then access `http//localhost:8365/` with a web browser.
 
 To stop,
 
@@ -41,13 +62,17 @@ To stop,
 docker-compose down
 ~~~
 
-or [see](https://docs.docker.com/compose/reference/down/).
+or on Windows,
+
+~~~shell
+docker-compose.exe down
+~~~
+
+For more options, cf. [reference of docker-compose](https://docs.docker.com/compose/reference/down/).
 
 ### 2. When using shell scripts
 
 #### 2.1 Build image
-
-If necessary, edit `FSWIKI_PLATFORM` and `FSWIKI_VERSION` in `./docker_build.sh`, then run:
 
 ~~~shell
 ./docker_build.sh
@@ -55,46 +80,48 @@ If necessary, edit `FSWIKI_PLATFORM` and `FSWIKI_VERSION` in `./docker_build.sh`
 
 #### 2.2 Run server for local use
 
-Edit `FSWIKI_DATA_ROOT` in ./run_fswiki_local.sh so that it can be the parent directory of `data/`, `attach/`, `config/` and `log/` of FSWiki, then run:
-
 ~~~shell
 ./run_fswiki_local.sh
 ~~~
 
-Access `http//localhost:8365/` with a web browser.
+Then access `http//localhost:8365/` with a web browser.
 
 #### Stop and remove the process
 
 ~~~shell
-docker stop fswiki_alpine_local && docker rm fswiki_alpine_local
+docker stop <container_name> && docker rm <container_name>
 ~~~
 
-or change `alpine` according to `FSWIKI_PLATFORM` in `./docker_build.sh`.
+where `<container_name>` is `fswiki_alpine_local_dc` or   `fswiki_ubuntu_local_dc` for docker-compose versions, and `fswiki_alpine_local` or   `fswiki_ubuntu_local` for shell script versions.
 
 #### Remove the image
 
 ~~~shell
-docker rmi fswiki_alpine_local:latest
+docker rmi <image_name>
 ~~~
 
-or change `alpine` according to `FSWIKI_PLATFORM` in `./docker_build.sh`.
+where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version>` `latest`, `3_8_5`, and os on.
 
 ## Docker Image Sizes
 
-|FSWIKI_PLATFORM|kernel|httpd|perl|Image Size[MB]|
-| :--- | ---: | ---: | ---: | ---: |
-|alpine|4.19.76|2.4.46|5.30.3|62.1|
-|ubuntu|4.19.76|2.4.43|5.28.1|243.0|
+|fswiki|base|kernel|httpd|perl|Image Size[MB]|
+| ---: | :--- | ---: | ---: | ---: | ---: |
+|3_6_5|alpine|4.19.76|2.4.46|5.30.3|62.1|
+|3_6_5|ubuntu|4.19.76|2.4.46|5.28.1|209.0|
 ---
 
 These info can be obtained by:
 
 ~~~shell
 docker images | grep fswiki_
-docker exec <container_name> sh -c "uname -r; httpd -v; perl -v"
+./check_versions.sh <container_name>
 ~~~
 
-where <container_name> is `fswiki_alpine_local_dc` or   `fswiki_ubuntu_local_dc` for docker-compose versions, and `fswiki_alpine_local` or   `fswiki_ubuntu_local` for shell script versions.
+## Test
+
+~~~shell
+./test.sh
+~~~
 
 ## CHANGELOG
 
