@@ -100,7 +100,7 @@ where `<container_name>` is `fswiki_alpine_local_dc` or   `fswiki_ubuntu_local_d
 docker rmi <image_name>
 ~~~
 
-where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version>` `latest`, `3_8_5`, and os on.
+where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version>` is `latest`, `3_8_5`, and os on.
 
 ## Docker Image Sizes
 
