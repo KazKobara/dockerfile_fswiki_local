@@ -7,7 +7,7 @@
 # and so on.
 #
 # Operation is checked at:
-#  FROM httpd:2.4.43
+#  FROM httpd:2.4.46, 2.4.43 
 #  perl v5.28.1
 # ---
 # THIS FILE COMES WITH ABSOLUTELY NO WARRANTY.
@@ -40,6 +40,7 @@ COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/ap
 # For docker-composer, loosen 172.17.0.1 to 172.
 RUN sed -r -i.bk \
     "s/Require all granted/Require all denied\n    Require ip ${require_ip}/g; \
+     s/#ServerName www.example.com/ServerName fswiki.local/g; \
      s/#LoadModule cgid_module/LoadModule cgid_module/g; \
      s/DirectoryIndex index.html/DirectoryIndex wiki.cgi/g; \
      s/Options Indexes FollowSymLinks/Options FollowSymLinks ExecCGI/g; \

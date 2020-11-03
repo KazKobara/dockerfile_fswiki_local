@@ -38,6 +38,7 @@ COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/ap
 #     s/Options Indexes FollowSymLinks/Options FollowSymLinks ExecCGI/g; \
 RUN sed -r -i.bk \
     "s/Require all granted/Require all denied\n    Require ip ${require_ip}/g; \
+     s/#ServerName www.example.com/ServerName fswiki.local/g; \
      s/#LoadModule cgid_module/LoadModule cgid_module/g; \
      s/DirectoryIndex index.html/DirectoryIndex wiki.cgi/g; \
      s/Options Indexes FollowSymLinks/Options ExecCGI/g; \
