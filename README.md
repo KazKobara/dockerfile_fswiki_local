@@ -54,6 +54,8 @@ or on Windows,
 docker-compose.exe up
 ~~~
 
+If the log messages on the terminal are not necessary, add `-d` option to them.
+
 Then access `http//localhost:8365/` with a web browser.
 
 To stop,
@@ -110,17 +112,35 @@ where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version
 |3_6_5|ubuntu|4.19.76|2.4.46|5.28.1|209.0|
 ---
 
-These info can be obtained by:
+These info can be obtained respectively by:
 
 ~~~shell
 docker images | grep fswiki_
+~~~
+
+and
+
+~~~shell
 ./check_versions.sh <container_name>
 ~~~
 
-## Test
+## TEST
 
 ~~~shell
 ./test.sh
+~~~
+
+## Setting for Web Security Check
+
+To allow access from other docker containers for web security check using OWASP ZAP, Nikto and so on, edit `FSWIKI_PORT` in `.env` and set their target IP addresses to any IP address assigned to the host OS.
+
+## Trouble-shooting
+
+- If web browser displays the following error, check or change `FSWIKI_DATA_ROOT` in .env file. Docker for Windows does not mount some folders to docker containers.
+
+~~~text
+Software Error:
+HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
 ~~~
 
 ## CHANGELOG

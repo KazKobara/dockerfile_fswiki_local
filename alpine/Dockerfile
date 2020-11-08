@@ -32,10 +32,8 @@ RUN apk update \
 # ADD/COPY --chown is available at Docker 17.09 and later.
 COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/apache2/htdocs
 
-# Edit here to allow access from other or all IP addresses.
-# Below only allows from 172.17.0.1 assigned to the docker default gateway.
-# For docker-composer, loosen 172.17.0.1 to 172.
-#     s/Options Indexes FollowSymLinks/Options FollowSymLinks ExecCGI/g; \
+# Edit ${require_ip} to allow access from other or all IP addresses where
+# ${require_ip} is given by docker-compose.yml or docker_build.sh.
 RUN sed -r -i.bk \
     "s/Require all granted/Require all denied\n    Require ip ${require_ip}/g; \
      s/#ServerName www.example.com/ServerName fswiki.local/g; \
@@ -43,7 +41,9 @@ RUN sed -r -i.bk \
      s/DirectoryIndex index.html/DirectoryIndex wiki.cgi/g; \
      s/Options Indexes FollowSymLinks/Options ExecCGI/g; \
      s/#AddHandler cgi-script .cgi/AddHandler cgi-script .cgi/g" \
-    /usr/local/apache2/conf/httpd.conf
+    /usr/local/apache2/conf/httpd.conf; \
+    echo "Include conf/extra/httpd-security-fswiki-local.conf" >> /usr/local/apache2/conf/httpd.conf
+COPY ./data/httpd-security-fswiki-local.conf /usr/local/apache2/conf/extra/.
 
 WORKDIR /usr/local/apache2/htdocs
 # TODO: owner, group and permissions should be harmonized with FSWiki setup.sh
@@ -56,3 +56,4 @@ RUN chown -R daemon:daemon ./pdf ./backup ./data ./attach ./config ./log
 COPY ./data/.htaccess .
 # Due to "AllowOverride None", append .htaccess to httpd.conf.
 RUN cat .htaccess >> /usr/local/apache2/conf/httpd.conf
+ 
