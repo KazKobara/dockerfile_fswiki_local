@@ -28,7 +28,7 @@ RUN apk update \
         perl \
         perl-cgi-fast \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org
-# httpd subprocesses are run as daemon user. 
+# httpd runs its sub-processes as daemon user, and 
 # ADD/COPY --chown is available at Docker 17.09 and later.
 COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/apache2/htdocs
 

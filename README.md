@@ -110,7 +110,6 @@ where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version
 | ---: | :--- | ---: | ---: | ---: | ---: |
 |3_6_5|alpine|4.19.76|2.4.46|5.30.3|62.1|
 |3_6_5|ubuntu|4.19.76|2.4.46|5.28.1|209.0|
----
 
 These info can be obtained respectively by:
 

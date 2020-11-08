@@ -7,5 +7,5 @@ docker run --restart always \
        -v "${FSWIKI_DATA_ROOT}/attach":/usr/local/apache2/htdocs/attach \
        -v "${FSWIKI_DATA_ROOT}/config":/usr/local/apache2/htdocs/config \
        -v "${FSWIKI_DATA_ROOT}/log":/usr/local/apache2/htdocs/log \
-       --name fswiki_${FSWIKI_PLATFORM}_local \
+       --name fswiki_${FSWIKI_PLATFORM}_local_${FSWIKI_VERSION} \
        fswiki_${FSWIKI_PLATFORM}_local:${FSWIKI_VERSION}

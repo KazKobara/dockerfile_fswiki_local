@@ -31,7 +31,7 @@ RUN apt-get update \
         ca-certificates \
     && apt-get autoremove -y \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org
-# httpd subprocesses are run as daemon user, so 
+# httpd runs its sub-processes as daemon user, and 
 # ADD/COPY --chown is available at Docker 17.09 and later.
 COPY --chown=daemon:daemon ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/apache2/htdocs
 

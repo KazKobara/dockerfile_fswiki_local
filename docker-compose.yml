@@ -2,14 +2,19 @@ version: '3.7'
 
 # -------------- Edit .env and Here ---------------
 x-var: &REQUIRE_IP
-    # IP or network addresses to be accessed from:
-    # docker-compose assigns 172.x or 192.168 to its bridge network using round robin.
-    "172 192.168"
+    ## IP or network addresses to be accessed from.
+    ## NOTE: docker-compose default network assigns, with round robin,
+    ##       172.18-31.0.0/16 or 192.168.x.0/20 in 0.0.16.0 step
+    ##       to its default bridge network.
+    ## For docker-compose default network:
+    # "172 192.168"
+    # "172.0.0.0\\\/11 192.168"
+    10.0.0.1
 # ---------------------------------
 
 services:
     fswiki_local:
-        container_name: fswiki_${FSWIKI_PLATFORM}_local_dc
+        container_name: fswiki_${FSWIKI_PLATFORM}_local_dc_${FSWIKI_VERSION}
         image: fswiki_${FSWIKI_PLATFORM}_local_dc:${FSWIKI_VERSION}
         build:
             context: .
@@ -28,3 +33,14 @@ services:
         ports:
             - "${FSWIKI_PORT}:80"
         restart: always
+        networks:
+            "10_0_0":
+                ipv4_address: 10.0.0.2
+
+networks:
+    "10_0_0":
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: 10.0.0.0/24
