@@ -32,6 +32,7 @@ vim .env
 For the following steps, either docker-compose or shell scripts can be used.
 
 If they pop up the following window on Windows, click the "cancel" button to block the access from outside your PC.
+
 ![cancel](./data/warning.png)
 
 ### 2. When using docker-compose
@@ -56,7 +57,7 @@ docker-compose.exe up
 
 If the log messages on the terminal are not necessary, add `-d` option to them.
 
-Then access `http//localhost:8365/` with a web browser.
+Then access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8365/` with a web browser.
 
 To stop,
 
@@ -86,7 +87,7 @@ For more options, cf. [reference of docker-compose](https://docs.docker.com/comp
 ./run_fswiki_local.sh
 ~~~
 
-Then access `http//localhost:8365/` with a web browser.
+Then access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8365/` with a web browser.
 
 #### Stop and remove the process
 
@@ -103,6 +104,13 @@ docker rmi <image_name>
 ~~~
 
 where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version>` is `latest`, `3_8_5`, and os on.
+
+## Differences between docker-compose and shell versions
+
+- The differences are the network addresses to be assigned and IP addresses that can access the fswiki server in the docker network.
+  - docker-compose uses 10.0.0.0/24 and httpd accepts access only from 10.0.0.1.
+  - shell version (docker build) uses 172.17.0.0/16 and httpd accepts access only from 172.17.0.1.
+  - See [this page](https://github.com/KazKobara/tips-jp/blob/gh-pages/docker/subnet.md) as well (after translating it from Japanese).
 
 ## Docker Image Sizes
 
@@ -142,6 +150,6 @@ Software Error:
 HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
 ~~~
 
-## CHANGELOG
+## [CHANGELOG](./CHANGELOG.md)
 
 ## [LICENSE](./LICENSE)
