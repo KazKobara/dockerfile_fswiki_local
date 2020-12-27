@@ -1,8 +1,13 @@
-# Dockerfile for local use FSWiki
+# Dockerfile and docker-compose.yml for local use FSWiki
 
 [FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi) is a Wiki clone written in Perl.
 
 This Dockerfile is to launch FSWiki that is used only from a local web browser.
+
+![screenshot](https://raw.githubusercontent.com/KazKobara/kati_dark/main/docs/screenshot.png)
+<!--
+![](https://fswiki.osdn.jp/cgi-bin/wiki.cgi?action=ATTACH&page=BugTrack%2Dtheme%2F30&file=screenshot%5Fsmall%2Epng)
+-->
 
 > **CAUTION:**
 To expose it to the public network, additional security considerations
