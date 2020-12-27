@@ -6,8 +6,8 @@
 
 ### Changed
 
-- Make 'latest' (git pull) default.
-- Make 'kati_dark' theme default.
+- Make '[latest FSWiki](https://scm.osdn.net/gitroot/fswiki/fswiki.git)' (git pull) default.
+- Make '[kati_dark theme](https://github.com/KazKobara/kati_dark)' default.
 
 ---
 Return to [README](../README.md)
