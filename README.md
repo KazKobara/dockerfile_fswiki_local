@@ -148,12 +148,30 @@ To allow access from other docker containers for web security check using OWASP 
 
 ## Trouble-shooting
 
-- If web browser displays the following error, check or change `FSWIKI_DATA_ROOT` in .env file. Docker for Windows does not mount some folders to docker containers.
+### Software Error
 
-~~~text
-Software Error:
-HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
-~~~
+If your web browser displays the following error, check or change `FSWIKI_DATA_ROOT` in .env file. Docker for Windows does not mount some folders to docker containers.
+
+  ~~~text
+  Software Error:
+  HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
+  ~~~
+
+### Lock is busy
+
+If your web browser displays the following error,
+
+  ~~~text
+  Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
+  ~~~
+
+check and change file permissions as follows where `2` is GID of daemon in the docker container.
+
+  ~~~console
+  chgrp -R 2     attach/ config/ data/ log/ resources/ theme/ tmpl/
+  chmod g+w   -R attach/ config/ data/ log/ resources/ theme/ tmpl/
+  chmod o+rwx -R attach/ config/ data/ log/ resources/ theme/ tmpl/
+  ~~~
 
 ## [CHANGELOG](./CHANGELOG.md)
 
