@@ -170,7 +170,7 @@ check and change file permissions as follows where `2` is GID of daemon in the d
   ~~~console
   chgrp -R 2     attach/ config/ data/ log/ resources/ theme/ tmpl/
   chmod g+w   -R attach/ config/ data/ log/ resources/ theme/ tmpl/
-  chmod o+rgw -R attach/ config/ data/ log/ resources/ theme/ tmpl/
+  chmod o+rwx -R attach/ config/ data/ log/ resources/ theme/ tmpl/
   ~~~
 
 ## [CHANGELOG](./CHANGELOG.md)
