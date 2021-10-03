@@ -12,7 +12,7 @@
 # ---
 # THIS FILE COMES WITH ABSOLUTELY NO WARRANTY.
 
-FROM httpd:latest
+FROM docker2021repos/httpd:2.4
 
 ARG tag_version
 LABEL maintainer="Kaz KOBARA <M-kaz-ml@aist.go.jp>"
