@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD024 no-duplicate-heading -->
 # Dockerfile and docker-compose.yml for local use FSWiki
 
 [FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi) is a Wiki clone written in Perl.
@@ -18,7 +19,9 @@ and so on.
 
 Run the following commands on a shell terminal.
 
-### 1. Get Dockerfile etc and enter the folder
+### 1. Get Dockerfile etc
+
+#### 1.1 git clone and enter the folder
 
 ~~~shell
 git clone https://github.com/KazKobara/dockerfile_fswiki_local.git .
@@ -28,13 +31,38 @@ git clone https://github.com/KazKobara/dockerfile_fswiki_local.git .
 cd dockerfile_fswiki_local
 ~~~
 
-Edit parameters in the `.env` file.
+#### 1.2 Edit parameters in `.env` file
 
 ~~~shell
 vim .env
 ~~~
 
-For the following steps, either docker-compose or shell scripts can be used.
+#### 1.3 Set permissions and group
+
+Set permissions and group of folders (and their files), which are under `FSWIKI_DATA_ROOT` folder (set in `.env`) and where `docker-compose.yml` or `run_fswiki_local.sh` specifies, say `attach/ config/ data/ log/`, as follows:
+
+  ~~~console
+  chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
+  chmod g+rw  -R attach/ config/ data/ log/
+  chmod o-rwx -R attach/ config/ data/ log/
+  ~~~
+
+where `<gid_of_httpd_sub-processes>` is
+
+|<gid_of_httpd_sub-processes>|(uid_of_httpd_subprocesses)|group|base|httpd|
+| :---: | :---: | :---: | :---: | :---: |
+|33|(33)|www-data|ubuntu|2.4.52|
+|82|(82)|www-data|alpine|2.4.52|
+
+Note that `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
+
+#### 1.4 Download FSWiki under ./tmp/
+
+~~~shell
+./get_fswiki.sh
+~~~
+
+For the following steps, you can use docker-compose or shell scripts depending on your environment.
 
 If they pop up the following window on Windows, click the "cancel" button to block the access from outside your PC.
 
@@ -42,19 +70,13 @@ If they pop up the following window on Windows, click the "cancel" button to blo
 
 ### 2. When using docker-compose
 
-Download FSWiki under ./tmp/ with:
-
-~~~shell
-./get_fswiki.sh
-~~~
-
-Run,
+#### 2.1 Build image and run server for local use
 
 ~~~shell
 docker-compose up
 ~~~
 
-or on Windows,
+or on Windows add `.exe` after docker-compose, such as
 
 ~~~shell
 docker-compose.exe up
@@ -64,19 +86,19 @@ If the log messages on the terminal are not necessary, add `-d` option to them.
 
 Then access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8365/` with a web browser.
 
-To stop,
+#### Stop and remove the process
 
 ~~~shell
 docker-compose down
 ~~~
 
-or on Windows,
+#### Rebuild for update/upgrade
 
 ~~~shell
-docker-compose.exe down
+docker-compose build
 ~~~
 
-For more options, cf. [reference of docker-compose](https://docs.docker.com/compose/reference/down/).
+For more options, cf. [reference of docker-compose](https://docs.docker.com/compose/reference/).
 
 ### 2. When using shell scripts
 
@@ -102,6 +124,12 @@ docker stop <container_name> && docker rm <container_name>
 
 where `<container_name>` is `fswiki_alpine_local_dc` or   `fswiki_ubuntu_local_dc` for docker-compose versions, and `fswiki_alpine_local` or   `fswiki_ubuntu_local` for shell script versions.
 
+#### Rebuild for update/upgrade
+
+~~~shell
+./docker_build.sh
+~~~
+
 #### Remove the image
 
 ~~~shell
@@ -119,12 +147,18 @@ where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version
 
 ## Docker Image Sizes
 
-|fswiki|base|kernel|httpd|perl|Image Size[MB]|
-| ---: | :--- | ---: | ---: | ---: | ---: |
-|3_6_5|alpine|4.19.76|2.4.46|5.30.3|62.1|
-|3_6_5|ubuntu|4.19.76|2.4.46|5.28.1|209.0|
+|tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
+| :---: | :---: | :--- | ---: | ---: | ---: | ---: |
+|0.0.2|latest (4ba68e3)|alpine|5.10.60.1|2.4.52|5.34.0|72.2|
+|0.0.2|3_6_5|alpine|5.10.60.1|2.4.52|5.34.0|70.2|
+|0.0.1|3_6_5|alpine|4.19.76|2.4.46 *1|5.30.3|62.1|
+|0.0.2|latest (4ba68e3)|ubuntu|5.10.60.1|2.4.52|5.32.1|222|
+|0.0.2|3_6_5|ubuntu|5.10.60.1|2.4.52|5.32.1|220|
+|0.0.1|3_6_5|ubuntu|4.19.76|2.4.46 *1|5.28.1|209|
 
-These info can be obtained respectively by:
+*1 Do not use 2.4.51 and earlier due to [their vulnerabilities](https://httpd.apache.org/security/vulnerabilities_24.html)!!
+
+The following commands show the sizes and versions:
 
 ~~~shell
 docker images | grep fswiki_
@@ -148,6 +182,34 @@ To allow access from other docker containers for web security check using OWASP 
 
 ## Trouble-shooting
 
+### 'Permission denied' or 'Lock is busy'
+
+If your web browser displays any of the following errors,
+
+  ~~~text
+  Permission denied at lib/Wiki/DefaultStorage.pm line 114. 
+  ~~~
+
+  ~~~text
+  Permission denied: ./log at lib/CGI2.pm line 34. 
+  ~~~
+
+  ~~~text
+  Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
+  ~~~
+
+check and change file permissions and group according to the above step 1.3.
+
+<!--
+check and change file permissions as follows where `2` is GID of daemon in the docker container.
+
+  ~~~console
+  chgrp -R 2     attach/ config/ data/ log/ resources/ theme/ tmpl/
+  chmod g+w   -R attach/ config/ data/ log/ resources/ theme/ tmpl/
+  chmod o+rwx -R attach/ config/ data/ log/ resources/ theme/ tmpl/
+  ~~~
+-->
+
 ### Software Error
 
 If your web browser displays the following error, check or change `FSWIKI_DATA_ROOT` in .env file. Docker for Windows does not mount some folders to docker containers.
@@ -155,22 +217,6 @@ If your web browser displays the following error, check or change `FSWIKI_DATA_R
   ~~~text
   Software Error:
   HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
-  ~~~
-
-### Lock is busy
-
-If your web browser displays the following error,
-
-  ~~~text
-  Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
-  ~~~
-
-check and change file permissions as follows where `2` is GID of daemon in the docker container.
-
-  ~~~console
-  chgrp -R 2     attach/ config/ data/ log/ resources/ theme/ tmpl/
-  chmod g+w   -R attach/ config/ data/ log/ resources/ theme/ tmpl/
-  chmod o+rwx -R attach/ config/ data/ log/ resources/ theme/ tmpl/
   ~~~
 
 ## [CHANGELOG](./CHANGELOG.md)

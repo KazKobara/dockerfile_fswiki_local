@@ -7,6 +7,8 @@ docker run --restart always \
        -v "${FSWIKI_DATA_ROOT}/attach":/usr/local/apache2/htdocs/attach \
        -v "${FSWIKI_DATA_ROOT}/config":/usr/local/apache2/htdocs/config \
        -v "${FSWIKI_DATA_ROOT}/log":/usr/local/apache2/htdocs/log \
-       -v "${FSWIKI_DATA_ROOT}/theme":/usr/local/apache2/htdocs/theme \
+       -v "${FSWIKI_DATA_ROOT}/theme/kati_dark":/usr/local/apache2/htdocs/theme/kati_dark \
        --name fswiki_${FSWIKI_PLATFORM}_local_${FSWIKI_VERSION} \
        fswiki_${FSWIKI_PLATFORM}_local:${FSWIKI_VERSION}
+ 
+#       -v "${FSWIKI_DATA_ROOT}/theme":/usr/local/apache2/htdocs/theme \

@@ -12,4 +12,5 @@ docker build -f "./${FSWIKI_PLATFORM}/Dockerfile" \
 	--build-arg tag_version="${TAG_VERSION}" \
 	--build-arg fswiki_version="${FSWIKI_VERSION}" \
 	--build-arg fswiki_tmp_dir="${FSWIKI_TMP_DIR}" \
-	--build-arg require_ip="${REQUIRE_IP}"
+	--build-arg require_ip="${REQUIRE_IP}" \
+	--build-arg owner_group="${OWNER_GROUP}"
