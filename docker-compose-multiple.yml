@@ -1,4 +1,6 @@
 version: '3.7'
+ 
+# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
 
 # -------------- Edit .env and Here ---------------
 x-var: &REQUIRE_IP
@@ -22,6 +24,7 @@ services:
             args:
                 require_ip: *REQUIRE_IP
                 tag_version: ${TAG_VERSION}
+                owner_group: ${OWNER_GROUP}
                 fswiki_version: ${FSWIKI_VERSION}
                 fswiki_tmp_dir: ${FSWIKI_TMP_DIR}
         volumes:
@@ -30,7 +33,7 @@ services:
             - ${FSWIKI_DATA_ROOT}/attach:/usr/local/apache2/htdocs/attach
             - ${FSWIKI_DATA_ROOT}/config:/usr/local/apache2/htdocs/config
             - ${FSWIKI_DATA_ROOT}/log:/usr/local/apache2/htdocs/log
-            - ${FSWIKI_DATA_ROOT}/theme:/usr/local/apache2/htdocs/theme
+            - ${FSWIKI_DATA_ROOT}/theme/kati_dark:/usr/local/apache2/htdocs/theme/kati_dark
         ports:
             - "${FSWIKI_PORT}:80"
         restart: always
@@ -48,16 +51,17 @@ services:
                 require_ip: *REQUIRE_IP
                 tag_version: ${TAG_VERSION}
                 fswiki_version: ${FSWIKI_VERSION}
+                owner_group: ${OWNER_GROUP}
                 fswiki_tmp_dir: ${FSWIKI_TMP_DIR}
         volumes:
             # Adding "" does not work.
-            - C:/Users/kaz/private/wiki_private/data:/usr/local/apache2/htdocs/data
-            - C:/Users/kaz/private/wiki_private/attach:/usr/local/apache2/htdocs/attach
-            - C:/Users/kaz/private/wiki_private/config:/usr/local/apache2/htdocs/config
-            - C:/Users/kaz/private/wiki_private/log:/usr/local/apache2/htdocs/log
-            - C:/Users/kaz/private/wiki_private/theme:/usr/local/apache2/htdocs/theme
+            - ${FSWIKI_DATA_ROOT_PRIVATE}/data:/usr/local/apache2/htdocs/data
+            - ${FSWIKI_DATA_ROOT_PRIVATE}/attach:/usr/local/apache2/htdocs/attach
+            - ${FSWIKI_DATA_ROOT_PRIVATE}/config:/usr/local/apache2/htdocs/config
+            - ${FSWIKI_DATA_ROOT_PRIVATE}/log:/usr/local/apache2/htdocs/log
+            - ${FSWIKI_DATA_ROOT_PRIVATE}/theme/kati_dark:/usr/local/apache2/htdocs/theme/kati_dark
         ports:
-            - "127.0.0.1:9366:80"
+            - "${FSWIKI_PORT_PRIVATE}:80"
         restart: always
         networks:
             "10_0_0":

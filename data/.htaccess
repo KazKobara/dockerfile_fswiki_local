@@ -1,6 +1,19 @@
-# TODO: set an appropriate pattern depending on the usage.
+# TODO: set appropriate patterns depending on the usage.
+#
+# setup.sh version 0.01 
 # <FilesMatch "\.(pm|dat|wiki|log)$">
-<FilesMatch "\.(pm|dat|wiki|log|sh|tmpl|cache|bk|org|old)">
+#
+# tag_version 0.0.1
+#<FilesMatch "\.(pm|dat|wiki|log|sh|tmpl|cache|bk|org|old)">
+#	deny from all
+#</FilesMatch>
+#
+# Allow only *.cgi
+<FilesMatch "\..*">
 	deny from all
 </FilesMatch>
+<FilesMatch "(wiki.cgi|favicon.ico)">
+	allow from all
+</FilesMatch>
+
 

@@ -1,5 +1,7 @@
 version: '3.7'
 
+# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
+
 # -------------- Edit .env and Here ---------------
 x-var: &REQUIRE_IP
     ## IP or network addresses to be accessed from.
@@ -22,6 +24,7 @@ services:
             args:
                 require_ip: *REQUIRE_IP
                 tag_version: ${TAG_VERSION}
+                owner_group: ${OWNER_GROUP}
                 fswiki_version: ${FSWIKI_VERSION}
                 fswiki_tmp_dir: ${FSWIKI_TMP_DIR}
         volumes:
@@ -30,10 +33,13 @@ services:
             - ${FSWIKI_DATA_ROOT}/attach:/usr/local/apache2/htdocs/attach
             - ${FSWIKI_DATA_ROOT}/config:/usr/local/apache2/htdocs/config
             - ${FSWIKI_DATA_ROOT}/log:/usr/local/apache2/htdocs/log
+            # For DIFF action, backup/ and theme/resources/ are needed. 
+            # - ${FSWIKI_DATA_ROOT}/backup:/usr/local/apache2/htdocs/backup
             # Look and feel
-            - ${FSWIKI_DATA_ROOT}/theme:/usr/local/apache2/htdocs/theme
-            - ${FSWIKI_DATA_ROOT}/tmpl:/usr/local/apache2/htdocs/tmpl
-            - ${FSWIKI_DATA_ROOT}/resources:/usr/local/apache2/htdocs/resources
+            # - ${FSWIKI_DATA_ROOT}/theme:/usr/local/apache2/htdocs/theme
+            # - ${FSWIKI_DATA_ROOT}/theme/resources:/usr/local/apache2/htdocs/theme/resources
+            - ${FSWIKI_DATA_ROOT}/theme/kati_dark:/usr/local/apache2/htdocs/theme/kati_dark
+            # - ${FSWIKI_DATA_ROOT}/tmpl:/usr/local/apache2/htdocs/tmpl
         ports:
             - "${FSWIKI_PORT}:80"
         restart: always

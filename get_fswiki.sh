@@ -3,6 +3,7 @@
 #   $ ./get_fswiki.sh [FSWIKI_VERSION [FSWIKI_TMP_DIR]]
 #
 #   where default FSWIKI_VERSION and FSWIKI_TMP_DIR are given in .env file.
+#   Cf. https://github.com/KazKobara/dockerfile_fswiki_local
 
 source .env
 echo "FSWIKI_VERSION: $FSWIKI_VERSION"
