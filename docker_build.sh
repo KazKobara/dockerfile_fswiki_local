@@ -1,4 +1,5 @@
 #!/bin/bash
+# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
 
 # IP or network addresses to be accessed from:
 # docker build assigns 172.17.0.0/16 to its docker bridge network.

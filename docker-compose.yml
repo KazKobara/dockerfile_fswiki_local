@@ -1,5 +1,7 @@
 version: '3.7'
 
+# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
+
 # -------------- Edit .env and Here ---------------
 x-var: &REQUIRE_IP
     ## IP or network addresses to be accessed from.

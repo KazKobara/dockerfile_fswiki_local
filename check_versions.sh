@@ -1,6 +1,9 @@
 #!/bin/bash
+#
 # Usage:
 #   check_versions $container_name
+#
+# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
 
 docker exec "$1" sh -c \
        "uname -r; \

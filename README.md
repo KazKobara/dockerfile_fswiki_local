@@ -96,14 +96,6 @@ docker-compose down
 
 For more options, cf. [reference of docker-compose](https://docs.docker.com/compose/reference/).
 
-#### To run multiple services
-
-Edit docker-compose-multiple.yml, then
-
-~~~shell
-docker-compose -f docker-compose-multiple.yml up
-~~~
-
 ### 2. Build and run using shell scripts
 
 #### 2.1 Build image
@@ -163,6 +155,20 @@ Run step 2.
 docker-compose up --no-deps --build
 ~~~
 -->
+
+## To run multiple/additional services
+
+Edit `FSWIKI_DATA_ROOT_PRIVATE` and `FSWIKI_PORT_PRIVATE` in `.env`, then
+
+~~~shell
+docker-compose -f docker-compose-multiple.yml up
+~~~
+
+or
+
+~~~shell
+./run_fswiki_private.sh
+~~~
 
 ## Differences between docker-compose and shell versions
 

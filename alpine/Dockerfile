@@ -1,5 +1,6 @@
 # This Dockerfile is to launch FSWiki that is used only from a local web
 # browser. 
+# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
 #
 # CAUTION: 
 # To expose it to the public network, additional security considerations

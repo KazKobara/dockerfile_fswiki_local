@@ -1,4 +1,5 @@
 #!/bin/bash
+# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
 
 source .env
 docker run --restart always \
