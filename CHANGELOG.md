@@ -14,6 +14,7 @@
 ### Changed
 
 - For `volumes` (or `-v` option) in `docker-compose.yml` and `run_fswiki_local.sh`, removed `theme/` and `tmpl/`, and then added `theme/kati_dark` only since `theme/` (especially `theme/resources`) and `tmpl/` are maintained by FSWiki and will be updated later on.
+- In `./test.sh`, what to test became selectable.
 
 ## [0.0.1]
 

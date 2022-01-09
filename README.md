@@ -24,7 +24,7 @@ Run the following commands on a shell terminal.
 #### 1.1 git clone and enter the folder
 
 ~~~shell
-git clone https://github.com/KazKobara/dockerfile_fswiki_local.git .
+git clone https://github.com/KazKobara/dockerfile_fswiki_local.git
 ~~~
 
 ~~~shell
@@ -53,6 +53,8 @@ where `<gid_of_httpd_sub-processes>` is
 | :---: | :---: | :---: | :---: | :---: |
 |33|(33)|www-data|ubuntu|2.4.52|
 |82|(82)|www-data|alpine|2.4.52|
+|1|(1)|daemon|ubuntu|2.4.46|
+|2|(2)|daemon|alpine|2.4.46|
 
 Note that `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
 
@@ -68,7 +70,7 @@ If they pop up the following window on Windows, click the "cancel" button to blo
 
 ![cancel](./data/warning.png)
 
-### 2. When using docker-compose
+### 2. Build and run using docker-compose
 
 #### 2.1 Build image and run server for local use
 
@@ -92,15 +94,17 @@ Then access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as 
 docker-compose down
 ~~~
 
-#### Rebuild for update/upgrade
-
-~~~shell
-docker-compose build
-~~~
-
 For more options, cf. [reference of docker-compose](https://docs.docker.com/compose/reference/).
 
-### 2. When using shell scripts
+#### To run multiple services
+
+Edit docker-compose-multiple.yml, then
+
+~~~shell
+docker-compose -f docker-compose-multiple.yml up
+~~~
+
+### 2. Build and run using shell scripts
 
 #### 2.1 Build image
 
@@ -124,12 +128,6 @@ docker stop <container_name> && docker rm <container_name>
 
 where `<container_name>` is `fswiki_alpine_local_dc` or   `fswiki_ubuntu_local_dc` for docker-compose versions, and `fswiki_alpine_local` or   `fswiki_ubuntu_local` for shell script versions.
 
-#### Rebuild for update/upgrade
-
-~~~shell
-./docker_build.sh
-~~~
-
 #### Remove the image
 
 ~~~shell
@@ -137,6 +135,34 @@ docker rmi <image_name>
 ~~~
 
 where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version>` is `latest`, `3_8_5`, and os on.
+
+### 3. Rebuild for update/upgrade
+
+#### 3.1 Update httpd
+
+ Depending on the base os of the docker container, run the following:
+
+For alpine:
+
+~~~shell
+docker pull httpd:alpine
+~~~
+
+For ubuntu:
+
+~~~shell
+docker pull httpd:latest
+~~~
+
+#### 3.2 Rebuild and run
+
+Run step 2.
+
+<!--
+~~~shell
+docker-compose up --no-deps --build
+~~~
+-->
 
 ## Differences between docker-compose and shell versions
 
@@ -149,14 +175,14 @@ where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version
 
 |tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
 | :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.2|latest (4ba68e3)|alpine|5.10.60.1|2.4.52|5.34.0|72.2|
-|0.0.2|3_6_5|alpine|5.10.60.1|2.4.52|5.34.0|70.2|
+|0.0.2|latest (4ba68e3)|alpine|5.10.60.1, 4.19.76|2.4.52|5.34.0|72.2|
+|0.0.2|3_6_5|alpine|5.10.60.1, 4.19.76|2.4.52|5.34.0|70.2|
 |0.0.1|3_6_5|alpine|4.19.76|2.4.46 *1|5.30.3|62.1|
 |0.0.2|latest (4ba68e3)|ubuntu|5.10.60.1|2.4.52|5.32.1|222|
 |0.0.2|3_6_5|ubuntu|5.10.60.1|2.4.52|5.32.1|220|
 |0.0.1|3_6_5|ubuntu|4.19.76|2.4.46 *1|5.28.1|209|
 
-*1 Do not use 2.4.51 and earlier due to [their vulnerabilities](https://httpd.apache.org/security/vulnerabilities_24.html)!!
+*1 httpd 2.4.51 and earlier have [vulnerabilities](https://httpd.apache.org/security/vulnerabilities_24.html), cf. step 3 to update httpd.
 
 The following commands show the sizes and versions:
 
@@ -170,7 +196,25 @@ and
 ./check_versions.sh <container_name>
 ~~~
 
+or the following test can show them too.
+
 ## TEST
+
+Set `FSWIKI_DATA_ROOT` in `.env` as an absolute path to test shell version.
+
+Edit the following parameters in `./test.sh`
+
+~~~shell
+## Edit here
+# TEST_PLATFORM="alpine ubuntu"
+TEST_PLATFORM="alpine"
+
+## Comment out if not to test
+TEST_DOCKER_COMPOSE="Do"
+# TEST_SHELL_VERSION="Do"
+~~~
+
+then
 
 ~~~shell
 ./test.sh
@@ -195,20 +239,14 @@ If your web browser displays any of the following errors,
   ~~~
 
   ~~~text
+  You don't have permission to access this resource.
+  ~~~
+
+  ~~~text
   Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
   ~~~
 
 check and change file permissions and group according to the above step 1.3.
-
-<!--
-check and change file permissions as follows where `2` is GID of daemon in the docker container.
-
-  ~~~console
-  chgrp -R 2     attach/ config/ data/ log/ resources/ theme/ tmpl/
-  chmod g+w   -R attach/ config/ data/ log/ resources/ theme/ tmpl/
-  chmod o+rwx -R attach/ config/ data/ log/ resources/ theme/ tmpl/
-  ~~~
--->
 
 ### Software Error
 
@@ -222,3 +260,8 @@ If your web browser displays the following error, check or change `FSWIKI_DATA_R
 ## [CHANGELOG](./CHANGELOG.md)
 
 ## [LICENSE](./LICENSE)
+
+---
+
+- [https://github.com/KazKobara/](https://github.com/KazKobara/)
+- [https://kazkobara.github.io/ (mostly in Japanese)](https://kazkobara.github.io/)
