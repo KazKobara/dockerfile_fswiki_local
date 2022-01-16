@@ -1,19 +1,15 @@
-# TODO: set appropriate patterns depending on the usage.
+# Dummy .htaccess for https://github.com/KazKobara/dockerfile_fswiki_local
 #
-# setup.sh version 0.01 
-# <FilesMatch "\.(pm|dat|wiki|log)$">
-#
-# tag_version 0.0.1
-#<FilesMatch "\.(pm|dat|wiki|log|sh|tmpl|cache|bk|org|old)">
-#	deny from all
-#</FilesMatch>
-#
-# Allow only *.cgi
-<FilesMatch "\..*">
-	deny from all
-</FilesMatch>
-<FilesMatch "(wiki.cgi|favicon.ico)">
-	allow from all
-</FilesMatch>
+# - This docker httpd ignores .htaccess due to 'AllowOverride None'
+#   in the httpd.conf.
+# - Security configuration is placed in httpd-security-fswiki-local.conf
+#   (and httpd.conf).
+# - If you wants to use .htaccess, 
+#   1. Move directives in each 'Directory' directive in the
+#      httpd-security-fswiki-local.conf into the .htaccess right under
+#      the folder corresponding the 'Directory' directive.
+#   2. Edit them, according to your einvironment.
+#   3. Change 'AllowOverride None' in httpd.conf.
+#   4. Run an httpd restart command, such as `httpd -k restart`.
 
-
+# Read the above or httpd-security-fswiki-local.conf.
