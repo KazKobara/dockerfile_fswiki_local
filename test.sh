@@ -24,7 +24,7 @@ fi
 
 ### functions ###
 
-# @brief Check and remove the containar process and image.
+# @brief Check and remove the container process and image.
 # @param $1 $container_name
 # @param $2 $image_name
 check_and_remove () {
@@ -73,7 +73,8 @@ fi
 cp -pf .env .env.org
 for f_platform in ${TEST_PLATFORM} ;do
     sed -i "/^FSWIKI_PLATFORM=/cFSWIKI_PLATFORM=$f_platform" .env
-    for f_version in 3_6_5 latest ;do
+    # 'latest' must come first since FSWIKI_DATA_ROOT=./tmp/wikilatest in '.env'.
+    for f_version in latest 3_6_5 ;do
 		if [ "$f_version" == "3_6_5" ]; then
 			f_ver_rem="="
 		else
