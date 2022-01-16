@@ -24,7 +24,7 @@ fi
 
 ### functions ###
 
-# @brief Check and remove the containar process and image.
+# @brief Check and remove the container process and image.
 # @param $1 $container_name
 # @param $2 $image_name
 check_and_remove () {

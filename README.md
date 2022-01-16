@@ -43,9 +43,10 @@ Set permissions and group of folders (and their files), which are under `FSWIKI_
 
   ~~~console
   chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
-  chmod g+rw  -R attach/ config/ data/ log/
-  chmod o-rwx -R attach/ config/ data/ log/
+  chmod -R a=rX,ug+w attach/ config/ data/ log/
   ~~~
+
+ <!--find . -type f -executable -print-->
 
 where `<gid_of_httpd_sub-processes>` is
 
@@ -56,7 +57,7 @@ where `<gid_of_httpd_sub-processes>` is
 |1|(1)|daemon|ubuntu|2.4.46|
 |2|(2)|daemon|alpine|2.4.46|
 
-Note that `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
+> **NOTE:** `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
 
 #### 1.4 Download FSWiki under ./tmp/
 
@@ -181,10 +182,10 @@ or
 
 |tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
 | :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.2|latest (4ba68e3)|alpine|5.10.60.1, 4.19.76|2.4.52|5.34.0|72.2|
+|0.0.2|latest (4ba68e3)|alpine|5.10.60.1, 4.19.76|2.4.52|5.34.0|71.6|
 |0.0.2|3_6_5|alpine|5.10.60.1, 4.19.76|2.4.52|5.34.0|70.2|
 |0.0.1|3_6_5|alpine|4.19.76|2.4.46 *1|5.30.3|62.1|
-|0.0.2|latest (4ba68e3)|ubuntu|5.10.60.1|2.4.52|5.32.1|222|
+|0.0.2|latest (4ba68e3)|ubuntu|5.10.60.1|2.4.52|5.32.1|221|
 |0.0.2|3_6_5|ubuntu|5.10.60.1|2.4.52|5.32.1|220|
 |0.0.1|3_6_5|ubuntu|4.19.76|2.4.46 *1|5.28.1|209|
 
@@ -262,6 +263,17 @@ If your web browser displays the following error, check or change `FSWIKI_DATA_R
   Software Error:
   HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
   ~~~
+
+### To show difference in "Difference" menu
+
+If inline scripts are not threatening, let the corresponding part in <!--/usr/local/apache2/conf/extra/-->[`httpd-security-fswiki-local.conf`](https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/httpd-security-fswiki-local.conf) as follows:
+
+~~~apache
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline';"
+# Header always set Content-Security-Policy "default-src 'self';"
+~~~
+
+though CSP Hash or CSP Nonce is more ideal than 'unsafe-inline' after modification of scripts.
 
 ## [CHANGELOG](./CHANGELOG.md)
 
