@@ -1,0 +1,37 @@
+diff --git a/diffview.css b/diffview.css
+index a74ee43..6fed5bf 100644
+--- a/diffview.css
++++ b/diffview.css
+@@ -63,10 +63,14 @@ table.diff .empty {
+ 	background-color:#DDD;
+ }
+ table.diff .replace {
+-	background-color:#FD8
++	/* background-color:#FD8 *//* for black text */
++	/* background-color:#640 *//* for white text */
++	background-color:#B82      /* for both */
+ }
+ table.diff .delete {
+-	background-color:#E99;
++	/* background-color:#E99 *//* for black text */
++	/* background-color:#C00 *//* for white text */
++	background-color:#C55      /* for both */
+ }
+ table.diff .skip {
+ 	background-color:#EFEFEF;
+@@ -74,10 +78,12 @@ table.diff .skip {
+ 	border-right:1px solid #BBC;
+ }
+ table.diff .insert {
+-	background-color:#9E9
++	/* background-color:#9E9 *//* for black text */
++	/* background-color:#050 *//* for white text */
++	background-color:#3C3      /* for both */
+ }
+ table.diff th.author {
+ 	text-align:right;
+ 	border-top:1px solid #BBC;
+ 	background:#EFEFEF
+-}
+\ No newline at end of file
++}
