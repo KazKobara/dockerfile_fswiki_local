@@ -38,7 +38,7 @@ services:
             # Look and feel
             # - ${FSWIKI_DATA_ROOT}/theme:/usr/local/apache2/htdocs/theme
             # - ${FSWIKI_DATA_ROOT}/theme/resources:/usr/local/apache2/htdocs/theme/resources
-            - ${FSWIKI_DATA_ROOT}/theme/kati_dark:/usr/local/apache2/htdocs/theme/kati_dark
+            # - ${FSWIKI_DATA_ROOT}/theme/kati_dark:/usr/local/apache2/htdocs/theme/kati_dark
             # - ${FSWIKI_DATA_ROOT}/tmpl:/usr/local/apache2/htdocs/tmpl
         ports:
             - "${FSWIKI_PORT}:80"

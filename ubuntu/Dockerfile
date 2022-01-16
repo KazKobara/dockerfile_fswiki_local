@@ -58,12 +58,11 @@ COPY ./data/httpd-security-fswiki-local.conf /usr/local/apache2/conf/extra/.
 WORKDIR /usr/local/apache2/htdocs
 # TODO: owner, group, and permissions should be harmonized with FSWiki setup.sh
 #       and docker -v.
-COPY --chown=${owner_group} ./data/favicon.ico .
-COPY --chown=${owner_group} ./data/.htaccess .
 # Due to "AllowOverride None", append .htaccess to httpd.conf.
-RUN cat .htaccess >> /usr/local/apache2/conf/httpd.conf; \
-    chmod 500 ./setup.sh; ./setup.sh; \
-    rm -rf ./setup.sh ./release.sh .git/ .htaccess; \
+RUN chmod 500 ./setup.sh; ./setup.sh; \
+    rm -rf ./setup.sh ./release.sh .git/ ./theme/kati_dark/.git/ ./theme/resources/jsdifflib/.git/; \
     chmod -R o-rwx ./; \
-    chmod 444 /usr/local/apache2/conf/extra/httpd-security-fswiki-local.conf; \
-    chown -R ${owner_group} ./attach ./backup ./config ./data ./log ./pdf
+    chmod -R o+r ./config ./log; \
+    chmod 444 /usr/local/apache2/conf/extra/httpd-security-fswiki-local.conf
+# The following is done by `./get_fswiki.sh` and the `COPY --chown` above.
+#    ; \ chown -R ${owner_group} ./attach ./backup ./config ./data ./log ./pdf
