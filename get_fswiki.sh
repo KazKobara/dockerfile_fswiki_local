@@ -34,6 +34,7 @@ PATCH_COMMAND="git --git-dir= apply"
 ## Below requires file name to patch
 # PATCH_COMMAND="eval patch <"
 
+# Patches to FSWiki 3.6.5
 apply_patches () {
  	mkdir -p ../patches
     ## Check 'search in content' check box with config/config.dat.
@@ -59,6 +60,7 @@ apply_patches () {
         cp -p ../../data/favicon.ico .
     fi
     # .htaccess
+    # rsync -c -b --suffix=_org ../../data/.htaccess ./.htaccess
     if [ -e "../../data/.htaccess" ]; then
         # mv .htaccess if different
         if [ -e "./.htaccess" ]; then
@@ -75,6 +77,11 @@ apply_patches () {
         if [ ! -e "./.htaccess" ]; then
             cp -p ../../data/.htaccess .
         fi
+    fi
+    ## Diff.pm and diff.js for CSP Hash
+    $PATCH_COMMAND ../../data/Diff.pm.patch
+    if [ ! -e "./theme/resources/diff.js" ]; then
+        cp -p ../../data/diff.js ./theme/resources/diff.js
     fi
 }
 

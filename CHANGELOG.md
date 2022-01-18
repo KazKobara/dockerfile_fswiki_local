@@ -3,13 +3,19 @@
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
 <!-- ## [Unreleased] -->
 
+## [0.0.3]
+
+### Security
+
+- Enabled `diffview` securely with CSP (Content Security Policy) Hash in `httpd-security-fswiki-local.conf`, `plugin/core/Diff.pm` and `theme/resources/diff.js`.
+
 ## [0.0.2]
 
 ### Security
 
 - Tested httpd 2.4.52 due to the [vulnerabilities of 2.4.51 and older](https://httpd.apache.org/security/vulnerabilities_24.html).
   - Added `OWNER_GROUP=www-data:www-data` in `.env`, and `${owner_group}` in `Dockerfile` `docker_build.sh` and `docker-compose.yml`, respectively, for owner and group of folders/files accessed by httpd sub-processes.
-- Set more strict permissions in `/httpd-security-fswiki-local.conf` and `Dockerfile`, then made `.htaccess` dummy.
+- Set more strict permissions in `httpd-security-fswiki-local.conf` and `Dockerfile`, then made `.htaccess` dummy.
 
 ### Changed
 

@@ -1,0 +1,71 @@
+diff --git a/plugin/core/Diff.pm b/plugin/core/Diff.pm
+index 70850b1..4471534 100644
+--- a/plugin/core/Diff.pm
++++ b/plugin/core/Diff.pm
+@@ -190,6 +190,17 @@ sub show_diff {
+ 
+ #==============================================================================
+ # jsdifflibを使って差分の表示を行うHTMLを取得
++# - 'function diffUsingJS(type)' is in resources/diff.js to work with
++#   CSP (Content Security Policy) Hash.
++# - Do not insert any space or new line between <script> and </script>
++#   to stabilize the hash value obtained by a command like:
++#   `echo -n '<script to be hashed>;' | openssl sha256 -binary | openssl base64`
++# - The hash values of the scripts in '_get_diff_html' (v3.6.5 + Diff.pm.patch)
++#   are as follows in order of appearance:
++#    'BbejOj1mgweHq0Bq0xbe0JxDKZHGdgx+vU7h23Rb3ms='
++#    '7yauwBOy1wbSK3qiAwLRNJJdhRqtqzgtLClTapOB/4A='
++# - An example of CSP to be included in httpd.conf is available from:
++#   https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/httpd-security-fswiki-local.conf
+ #==============================================================================
+ sub _get_diff_html {
+ 	my $wiki = shift;
+@@ -200,43 +211,16 @@ sub _get_diff_html {
+ 	my $buf = qq|
+ <script type="text/javascript" src="${theme_uri}/resources/jsdifflib/difflib.js"></script>
+ <script type="text/javascript" src="${theme_uri}/resources/jsdifflib/diffview.js"></script>
++<script type="text/javascript" src="${theme_uri}/resources/diff.js"></script>
+ <link href="${theme_uri}/resources/jsdifflib/diffview.css" type="text/css" rel="stylesheet" />
+-<script type="text/javascript">
+-function diffUsingJS(type) {
+-    // get the baseText and newText values from the two textboxes, and split them into lines
+-    var base   = difflib.stringAsLines(document.getElementById("baseText").value);
+-    var newtxt = difflib.stringAsLines(document.getElementById("newText").value);
+ 
+-    // create a SequenceMatcher instance that diffs the two sets of lines
+-    var sm = new difflib.SequenceMatcher(base, newtxt);
+-
+-    // get the opcodes from the SequenceMatcher instance
+-    // opcodes is a list of 3-tuples describing what changes should be made to the base text
+-    // in order to yield the new text
+-    var opcodes = sm.get_opcodes();
+-    var diffoutputdiv = document.getElementById("diffoutputdiv")
+-    while (diffoutputdiv.firstChild) diffoutputdiv.removeChild(diffoutputdiv.firstChild);
+-
+-    // build the diff view and add it to the current DOM
+-    diffoutputdiv.appendChild(diffview.buildView({
+-        baseTextLines: base,
+-        newTextLines: newtxt,
+-        opcodes: opcodes,
+-        // set the display titles for each resource
+-        baseTextName: "Base Text",
+-        newTextName: "New Text",
+-        contextSize: null,
+-        viewType: type // 1 or 0
+-    }));
+-}
+-</script>
+ <input id="newText"  type="hidden" value="@{[Util::escapeHTML($source1)]}">
+ <input id="baseText" type="hidden" value="@{[Util::escapeHTML($source2)]}">
+-<input type="checkbox" id="viewtype" onclick="diffUsingJS(this.checked ? 0 : 1)"><label for="viewtype">サイドバイサイドで表示</label>
++<input type="checkbox" id="viewtype">
++<script type="text/javascript">document.getElementById("viewtype").addEventListener("click",function(){diffUsingJS(this.checked?0:1);});</script>
++<label for="viewtype">サイドバイサイドで表示</label>
+ <div id="diffoutputdiv"></div>
+-<script type="text/javascript">
+-  diffUsingJS(1);
+-</script>
++<script type="text/javascript">diffUsingJS(1);</script>
+ 	|;
+ 	
+ 	return $buf;
