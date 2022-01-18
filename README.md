@@ -73,21 +73,29 @@ If they pop up the following window on Windows, click the "cancel" button to blo
 
 ### 2. Build and run using docker-compose
 
-#### 2.1 Build image and run server for local use
+#### 2.1 Build image
 
 ~~~shell
-docker-compose up
+docker-compose build
 ~~~
 
 or on Windows add `.exe` after docker-compose, such as
 
 ~~~shell
-docker-compose.exe up
+docker-compose.exe build
 ~~~
 
-If the log messages on the terminal are not necessary, add `-d` option to them.
+#### 2.2 Run
 
-Then access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8365/` with a web browser.
+~~~shell
+docker-compose up
+~~~
+
+To run it in the background, add `-d` option.
+
+#### 2.3 Browse
+
+Access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8366/` with your web browser.
 
 #### Stop and remove the process
 
@@ -111,7 +119,9 @@ For more options, cf. [reference of docker-compose](https://docs.docker.com/comp
 ./run_fswiki_local.sh
 ~~~
 
-Then access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8365/` with a web browser.
+#### 2.3 Browse
+
+Access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8366/` with your web browser.
 
 #### Stop and remove the process
 
@@ -264,9 +274,12 @@ If your web browser displays the following error, check or change `FSWIKI_DATA_R
   HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
   ~~~
 
+<!--
+From v0.0.3, 'diff view' is available using CSP Hash without relying on 'unsafe-inline' or 'unsafe-hashes'!!
+
 ### To show difference in "Difference" menu
 
-If inline scripts are not threatening, let the corresponding part in <!--/usr/local/apache2/conf/extra/-->[`httpd-security-fswiki-local.conf`](https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/httpd-security-fswiki-local.conf) as follows:
+If inline scripts are not threatening, let the corresponding part in /usr/local/apache2/conf/extra/[`httpd-security-fswiki-local.conf`](https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/httpd-security-fswiki-local.conf) as follows:
 
 ~~~apache
 Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline';"
@@ -274,6 +287,7 @@ Header always set Content-Security-Policy "default-src 'self'; script-src 'self'
 ~~~
 
 though CSP Hash or CSP Nonce is more ideal than 'unsafe-inline' after modification of scripts.
+-->
 
 ## [CHANGELOG](./CHANGELOG.md)
 
