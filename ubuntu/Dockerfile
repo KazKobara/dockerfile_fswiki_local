@@ -30,13 +30,28 @@ ARG fswiki_tmp_dir
 ARG fswiki_version
 ENV DEBCONF_NOWARNINGS yes
 # ca-certificates is for wget
+# libtext-markdown-perl is for Text::Markdown 1.000031
+# libtext-markdown-discount-perl is for Text::Markdown::Discount 0.12
+# git make gcc libperl-dev are for Text::Markdown::Discount 0.13 or later
+# git cherry-pick b002a5a is to fix https://github.com/Orc/discount/issues/189 .
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         perl \
         libcgi-session-perl \
         ca-certificates \
-    && apt-get autoremove -y \
-    && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org
+        git make gcc libperl-dev\
+    && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org \
+    && git clone https://github.com/sekimura/text-markdown-discount.git -b 0.13 --depth 1 \
+    && (cd text-markdown-discount \
+    && git remote add -t v2maint discount https://github.com/Orc/discount.git \
+    && git fetch --depth 400 -n discount \
+    && git cherry-pick -n b002a5a \
+    && perl Makefile.PL && make && make install) \
+    && apt-get purge -y git make clang gcc \
+    && apt-get autoremove -y
+#
+#    && rm -rf text-markdown-discount \
+#
 # httpd runs its sub-processes as daemon user, and 
 # ADD/COPY --chown is available at Docker 17.09 and later.
 COPY --chown=${owner_group} ${fswiki_tmp_dir}/wiki${fswiki_version} /usr/local/apache2/htdocs
@@ -59,8 +74,9 @@ WORKDIR /usr/local/apache2/htdocs
 # TODO: owner, group, and permissions should be harmonized with FSWiki setup.sh
 #       and docker -v.
 # Due to "AllowOverride None", append .htaccess to httpd.conf.
-RUN chmod 500 ./setup.sh; ./setup.sh; \
+RUN chmod 500 ./setup.sh && ./setup.sh; \
     rm -rf ./setup.sh ./release.sh .git/ ./theme/kati_dark/.git/ ./theme/resources/jsdifflib/.git/; \
+    chown -R ${owner_group} attach/ config/ data/ log/; \
     chmod -R o-rwx ./; \
     chmod -R o+r ./config ./log; \
     chmod 444 /usr/local/apache2/conf/extra/httpd-security-fswiki-local.conf

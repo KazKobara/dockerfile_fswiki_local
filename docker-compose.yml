@@ -1,6 +1,14 @@
 version: '3.7'
 
-# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
+# This file is a part of
+# https://github.com/KazKobara/dockerfile_fswiki_local .
+
+##### To launch multiple independent docker processes #####
+# Modify the following variables to be unique to existing ones:
+# - 'x-var: &REQUIRE_IP'
+# - 'FSWIKI_PORT' in .env
+# - 'container_name:' and 'image:' in the 'fswiki_local:' section.
+# - Name and addresses in the following 'networks:' sectoin. 
 
 # -------------- Edit .env and Here ---------------
 x-var: &REQUIRE_IP

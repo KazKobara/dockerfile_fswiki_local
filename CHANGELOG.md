@@ -3,6 +3,16 @@
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
 <!-- ## [Unreleased] -->
 
+## [Unreleased 0.0.4]
+
+### Added
+
+- plugin/markdown/Markdown.pm and its security settings for Content Security Policy (CSP).
+
+### Changed
+
+- Separated change_permissions.sh from get_fswiki.sh.
+
 ## [0.0.3]
 
 ### Security

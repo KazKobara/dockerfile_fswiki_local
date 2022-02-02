@@ -29,11 +29,24 @@ ARG require_ip
 ARG fswiki_tmp_dir
 ARG fswiki_version
 ENV DEBCONF_NOWARNINGS yes
+# git cmake make gcc musl-dev perl-dev are for Text::Markdown::Discount 0.13 or later
+# git cherry-pick b002a5a is to fix https://github.com/Orc/discount/issues/189 .
 RUN apk update \
     && apk add \
         perl \
         perl-cgi-fast \
-    && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org
+        git cmake make gcc musl-dev perl-dev \
+    && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org \
+    && git clone https://github.com/sekimura/text-markdown-discount.git -b 0.13 --depth 1 \
+    && (cd text-markdown-discount \
+    && git remote add -t v2maint discount https://github.com/Orc/discount.git \
+    && git fetch --depth 400 -n discount \
+    && git cherry-pick -n b002a5a \
+    && perl Makefile.PL && make && make install) \
+    && apk del git cmake make gcc musl-dev perl-dev
+#
+#    && rm -rf text-markdown-discount \
+#
 # httpd runs its sub-processes as a 'www-data' user for 2.4.52
 # (or a 'daemon' user for older ones).
 # ADD/COPY --chown is available at Docker 17.09 and later.
@@ -59,6 +72,7 @@ WORKDIR /usr/local/apache2/htdocs
 # Due to "AllowOverride None", append copied .htaccess to httpd.conf.
 RUN chmod 500 ./setup.sh; ./setup.sh; \
     rm -rf ./setup.sh ./release.sh .git/ ./theme/kati_dark/.git/ ./theme/resources/jsdifflib/.git/; \
+    chown -R ${owner_group} attach/ config/ data/ log/; \
     chmod -R o-rwx ./; \
     chmod -R o+r ./config ./log; \
     chmod 444 /usr/local/apache2/conf/extra/httpd-security-fswiki-local.conf

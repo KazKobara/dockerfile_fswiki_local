@@ -1,11 +1,11 @@
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
 # Dockerfile and docker-compose.yml for local use FSWiki
 
-[FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi) is a Wiki clone written in Perl.
+[FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi) is a Wiki clone written in Perl (and JavaScript<!-- for diffview-->).
 
 This Dockerfile is to launch FSWiki that is used only from a local web browser.
 
-![screenshot](https://raw.githubusercontent.com/KazKobara/kati_dark/main/docs/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/KazKobara/kati_dark/main/docs/screenshot.png "screenshot")
 <!--
 ![](https://fswiki.osdn.jp/cgi-bin/wiki.cgi?action=ATTACH&page=BugTrack%2Dtheme%2F30&file=screenshot%5Fsmall%2Epng)
 -->
@@ -14,6 +14,59 @@ This Dockerfile is to launch FSWiki that is used only from a local web browser.
 To expose it to the public network, additional security considerations
 would be necessary including https use, load-balancing, permissions
 and so on.
+
+## Features
+
+### Markdown Plugin with CSP (Content Security Policy)
+
+![markdown_screenshot](https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/markdown_screenshot.png "screenshot")
+
+<!-- ![markdown_screenshot](./data/markdown_screenshot.png "screenshot") -->
+
+The above is the screenshot of the following markdown document (in a markdown block of FSWiki
+in the ['kati_dark' theme](https://github.com/KazKobara/kati_dark "https://github.com/KazKobara/kati_dark (in Japanese)") where other themes are available from [here](https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 (in Japanese)").
+
+<!-- markdownlint-disable MD048 -->
+<!-- Rationale: Nested fenced code -->
+
+<!--
+Including "'markdown' in double curly braces", the tag to identify markdown blocks in FSWiki, here and below causes 
+"Liquid Exception: Liquid syntax error (line 26): Variable" error in
+"pages build and deployment pages build and deployment #6" for jekyll-theme-midnight.
+ -->
+
+~~~markdown
+# Markdown Plugin with CSP
+
+## Syntax
+
+1. **Inline _scripts_** and _**unintended** inline styles_ are ~~allowed~~ blocked by CSP.
+    - <span type="text/css" class="orange">Coloring</span> shall be realized using style-sheet defined {type, class, id} selectors.
+
+### Definition List
+
+CSP
+: Content ___Security___ Policy
+
+=FSWiki=
+    A *Wiki* clone written in [Perl](https://www.perl.org/ "https://www.perl.org/") (and JavaScript).
+
+### Table
+
+<!-- Realizing 'text-align:' in a markdown table without using inline-style requires a tweak. -->
+
+| text-align: left | text-align: center | text-align: right |
+|:---------|:----------:|---------:|
+| left     |   center   |    right |
+
+### Fenced Code Block
+
+```console
+git clone https://github.com/KazKobara/dockerfile_fswiki_local.git
+cd dockerfile_fswiki_local
+```
+~~~
+<!-- markdownlint-enable MD048 -->
 
 ## How to use
 
@@ -33,33 +86,13 @@ cd dockerfile_fswiki_local
 
 #### 1.2 Edit parameters in `.env` file
 
+Especially, `FSWIKI_DATA_ROOT` that has docker shared volumes specified in `docker-compose.yml` or `run_fswiki_local.sh`, typically `attach/ config/ data/ log/`.
+
 ~~~shell
 vim .env
 ~~~
 
-#### 1.3 Set permissions and group
-
-Set permissions and group of folders (and their files), which are under `FSWIKI_DATA_ROOT` folder (set in `.env`) and where `docker-compose.yml` or `run_fswiki_local.sh` specifies, say `attach/ config/ data/ log/`, as follows:
-
-  ~~~console
-  chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
-  chmod -R a=rX,ug+w attach/ config/ data/ log/
-  ~~~
-
- <!--find . -type f -executable -print-->
-
-where `<gid_of_httpd_sub-processes>` is
-
-|<gid_of_httpd_sub-processes>|(uid_of_httpd_subprocesses)|group|base|httpd|
-| :---: | :---: | :---: | :---: | :---: |
-|33|(33)|www-data|ubuntu|2.4.52|
-|82|(82)|www-data|alpine|2.4.52|
-|1|(1)|daemon|ubuntu|2.4.46|
-|2|(2)|daemon|alpine|2.4.46|
-
-> **NOTE:** `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
-
-#### 1.4 Download FSWiki under ./tmp/
+#### 1.3 Download FSWiki under ./tmp/
 
 ~~~shell
 ./get_fswiki.sh
@@ -69,7 +102,13 @@ For the following steps, you can use docker-compose or shell scripts depending o
 
 If they pop up the following window on Windows, click the "cancel" button to block the access from outside your PC.
 
-![cancel](./data/warning.png)
+![cancel](./data/warning.png "Push the cancel button")
+
+<!--
+<img src="./data/warning.png_" alt="Push the cancel button" width="500" title="Push the cancel button"/>
+
+<img src="./data/warning.png" alt="Push the cancel button" width="80%" title="Push the cancel button"/>
+-->
 
 ### 2. Build and run using docker-compose
 
@@ -169,17 +208,29 @@ docker-compose up --no-deps --build
 
 ## To run multiple/additional services
 
-Edit `FSWIKI_DATA_ROOT_PRIVATE` and `FSWIKI_PORT_PRIVATE` in `.env`, then
+There are two ways to realize this, one creates new folders, the other uses one existing folder.
 
-~~~shell
-docker-compose -f docker-compose-multiple.yml up
-~~~
+### In a new folder
 
-or
+1. git clone to another folder.
+1. In the new folder, edit variables according to the section of
+`##### To launch multiple independent docker processes #####` in
+[docker-compose.yml](https://github.com/KazKobara/dockerfile_fswiki_local/blob/main/docker-compose.yml).
+1. Run 1.2 and later.
 
-~~~shell
-./run_fswiki_private.sh
-~~~
+### In an existing folder
+
+  Edit `FSWIKI_DATA_ROOT_PRIVATE` and `FSWIKI_PORT_PRIVATE` in `.env`, then
+
+  ~~~shell
+  docker-compose -f docker-compose-multiple.yml up
+  ~~~
+
+  or
+
+  ~~~shell
+  ./run_fswiki_private.sh
+  ~~~
 
 ## Differences between docker-compose and shell versions
 
@@ -241,6 +292,16 @@ then
 
 To allow access from other docker containers for web security check using OWASP ZAP, Nikto and so on, edit `FSWIKI_PORT` in `.env` and set their target IP addresses to any IP address assigned to the host OS.
 
+## Setting for Markdown Plugin and CSP
+
+Cf. [Help/Markdown] though it is in Japanese.
+
+[Help/Markdown]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/Help%252FMarkdown.wiki "https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/Help%252FMarkdown.wiki"
+
+<!--
+[Markdown Plugin]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/markdown_plugin_for_fswiki.md "https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/markdown_plugin_for_fswiki.md"
+-->
+
 ## Trouble-shooting
 
 ### 'Permission denied' or 'Lock is busy'
@@ -263,7 +324,36 @@ If your web browser displays any of the following errors,
   Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
   ~~~
 
-check and change file permissions and group according to the above step 1.3.
+check and change file permissions and group as follows:
+
+#### How to set permissions and group
+
+Check and/or edit `FSWIKI_DATA_ROOT` in `.env`. Then in the same folder as `.env`, run
+
+~~~console
+./change_permissions.sh
+~~~
+
+Alternatively, set manually permissions and group of folders (and their files), which are under `FSWIKI_DATA_ROOT` folder set in `.env`, and where `docker-compose.yml` or `run_fswiki_local.sh` specifies.
+If the folders are `attach/ config/ data/ log/`, the commands are as follows:
+
+  ~~~console
+  chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
+  chmod -R a=rX,ug+w attach/ config/ data/ log/
+  ~~~
+
+ <!--find . -type f -executable -print-->
+
+where `<gid_of_httpd_sub-processes>` is
+
+|<gid_of_httpd_sub-processes>|(uid_of_httpd_subprocesses)|group|base|httpd|
+| :---: | :---: | :---: | :---: | :---: |
+|33|(33)|www-data|ubuntu|2.4.52|
+|82|(82)|www-data|alpine|2.4.52|
+|1|(1)|daemon|ubuntu|2.4.46|
+|2|(2)|daemon|alpine|2.4.46|
+
+> **NOTE:** `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
 
 ### Software Error
 
@@ -272,6 +362,15 @@ If your web browser displays the following error, check or change `FSWIKI_DATA_R
   ~~~text
   Software Error:
   HTML::Template->new() : Cannot open included file ./tmpl/site//. tmpl : file not found. at lib/HTML/Template.pm
+  ~~~
+
+### Can't locate CGI.pm
+
+If the docker outputs the following log, install Perl CGI with `apt-get install -y libcgi-session-perl` for Ubuntu, `apk add -y perl-cgi-fast` for Alpine, and so on.
+
+  ~~~text
+  Can't locate CGI.pm in @INC (you may need to install the CGI module) (...) at lib/CGI2.pm line 7.
+  BEGIN failed--compilation aborted at lib/CGI2.pm line 7.
   ~~~
 
 <!--

@@ -14,20 +14,6 @@ if [ "$1" != "" ];then
     fi
 fi
 
-##
-if [ "${FSWIKI_PLATFORM}" == "alpine" ];then
-    ## for httpd 2.5.52 (or newer)
-    GID_OF_HTTPD_SUB_PROCESSES=82
-    ## for httpd 2.4.46 (or older than 2.5.52)
-    # GID_OF_HTTPD_SUB_PROCESSES=2
-elif [ "${FSWIKI_PLATFORM}" == "ubuntu" ];then
-    ## for httpd 2.5.52 (or newer)
-    GID_OF_HTTPD_SUB_PROCESSES=33
-    ## for httpd 2.4.46 (or older than 2.5.52)
-    # GID_OF_HTTPD_SUB_PROCESSES=1
-else
-    echo "ERROR: unknown FSWIKI_PLATFORM=${FSWIKI_PLATFORM}"
-fi
 FSWIKI_SOURCE_DIR="wiki${FSWIKI_VERSION}"
 FSWIKI_ZIP="${FSWIKI_SOURCE_DIR}.zip"
 PATCH_COMMAND="git --git-dir= apply"
@@ -35,6 +21,7 @@ PATCH_COMMAND="git --git-dir= apply"
 # PATCH_COMMAND="eval patch <"
 
 # Patches to FSWiki 3.6.5
+# TODO: '../../' assumes and depends on "./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}/".
 apply_patches () {
  	mkdir -p ../patches
     ## Check 'search in content' check box with config/config.dat.
@@ -83,114 +70,172 @@ apply_patches () {
     if [ ! -e "./theme/resources/diff.js" ]; then
         cp -p ../../data/diff.js ./theme/resources/diff.js
     fi
+    ##### Plugin #####
+    ## Default Off
+    #for p in markdown rename; do
+    #    sed -E -i "/^$p *\$/d" ./config/plugin.dat
+    #done
+    ## Default On
+    for p in markdown rename; do
+        grep -qE "^$p *\$"  ./config/plugin.dat || sed -E -i "\$i$p" ./config/plugin.dat
+        # grep -qE "^$p *\$"  ./config/plugin.dat || sed -E -i "\$a$p" ./config/plugin.dat
+        ## Following does not work since the file does not end with a new line.
+        # grep -qE "^$p *\$"  ./config/plugin.dat || echo "$p" >> ./config/plugin.dat
+    done
+    echo
+    echo "---- ./config/plugin.dat -----"
+    cat ./config/plugin.dat
+    echo "------------------------------"
+    echo
 }
 
 echo
 echo "=== getting or updating fswiki ==="
 mkdir -p "${FSWIKI_TMP_DIR}"
-# pushd/popd is needed since this is sourced by ./docker_build.sh.
+# pushd/popd are needed since this is sourced by ./docker_build.sh.
 pushd "$(pwd)" || exit 2
 cd "${FSWIKI_TMP_DIR}/" || { echo "ERROR: could not 'cd ${FSWIKI_TMP_DIR}/'!!"; exit 1; }
-if [ "$FSWIKI_VERSION" == "latest" ]; then
-    if [ ! -e "${FSWIKI_SOURCE_DIR}" ]; then
+if [ ! -e "${FSWIKI_SOURCE_DIR}" ]; then
+    if [ "$FSWIKI_VERSION" == "latest" ]; then
 	    git clone --depth 1 https://scm.osdn.net/gitroot/fswiki/fswiki.git "${FSWIKI_SOURCE_DIR}"
-	    (cd "${FSWIKI_SOURCE_DIR}" && apply_patches)
     else
-	    (cd "${FSWIKI_SOURCE_DIR}" && git pull --depth 1)
-    fi
-else
-    if [ ! -e "${FSWIKI_SOURCE_DIR}" ]; then
-    	if [ ! -e "${FSWIKI_ZIP}" ]; then
-	        curl -OL "https://ja.osdn.net/projects/fswiki/downloads/69263/${FSWIKI_ZIP}"
+        if [ ! -e "${FSWIKI_ZIP}" ]; then
+            curl -OL "https://ja.osdn.net/projects/fswiki/downloads/69263/${FSWIKI_ZIP}"
             # wget "https://ja.osdn.net/projects/fswiki/downloads/69263/${FSWIKI_ZIP}"
-	    fi
-	    unzip "./${FSWIKI_ZIP}"
-	    (cd "${FSWIKI_SOURCE_DIR}" && apply_patches)
+        fi
+        unzip "./${FSWIKI_ZIP}"
+    fi
+    (cd "${FSWIKI_SOURCE_DIR}" && apply_patches)
+elif [ ! -d "${FSWIKI_SOURCE_DIR}" ]; then
+    echo "WARNING: ${FSWIKI_SOURCE_DIR} exists but not a folder!!"
+else
+    # The holder exists.
+    if [ "$FSWIKI_VERSION" == "latest" ]; then
+	    (cd "${FSWIKI_SOURCE_DIR}" && git pull --depth 1)
     fi
 fi
 
+# in "./${FSWIKI_TMP_DIR}"
+echo
+echo "=== setting in ${FSWIKI_SOURCE_DIR} ==="
+pushd "$(pwd)" || exit 2
+cd "./${FSWIKI_SOURCE_DIR}/" || { echo "ERROR: could not 'cd ./${FSWIKI_SOURCE_DIR}/'!!" ; exit 1; }
+
 # Get new theme
+# in "./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}/"
 if [ "${FSWIKI_THEME}" == "kati_dark" ]; then
     echo
     echo "=== git clone or pull 'kati_dark' theme ==="
-    # pushd/popd is needed since this is sourced by ./docker_build.sh.
     pushd "$(pwd)" || exit 2
-    # mkdir -p "${FSWIKI_SOURCE_DIR}/theme"
-    cd "${FSWIKI_SOURCE_DIR}/theme" || { echo "ERROR: could not 'cd ${FSWIKI_TMP_DIR}/wiki${FSWIKI_VERSION}/theme/'!!"; exit 1; }
-    if [ ! -e "${FSWIKI_THEME}" ]; then
-        # git clone --depth 1 git@github.com:KazKobara/kati_dark.git
-        git clone --depth 1 https://github.com/KazKobara/kati_dark.git
-    else
-        (cd "kati_dark" && git pull --depth 1)
-    fi
-    popd || exit 2
-fi
-
-# Get jsdifflib
-echo
-echo "=== git clone or pull 'jsdifflib' ==="
-# pushd/popd is needed since this is sourced by ./docker_build.sh.
-pushd "$(pwd)" || exit 2
-cd "${FSWIKI_SOURCE_DIR}/theme/resources/" || { echo "ERROR: could not 'cd ${FSWIKI_TMP_DIR}/wiki${FSWIKI_VERSION}/theme/resources/'!!"; exit 1; }
-# `git -C ./jsdifflib/ rev-parse 2>/dev/null` does not work since it is under another git repo.
-TESTED_JSDIFFLIB=f728d45e5ccb798f35696f2ac6b763fbfc7682d0
-if [ ! -d "jsdifflib/.git" ]; then
-    if [ -d "jsdifflib" ]; then
-        mv jsdifflib jsdifflib_org 
-    fi
-    git clone https://github.com/cemerick/jsdifflib.git
-    (cd jsdifflib && \
-    git reset --hard "${TESTED_JSDIFFLIB}" && \
-    $PATCH_COMMAND ../../../../../data/diffview_to_both_white_and_black_text.patch)
-else
-    # (cd "jsdifflib" && git pull --depth 1)
-    pushd "$(pwd)" || exit 2
-        cd "jsdifflib" || { echo "ERROR: could not 'cd ${FSWIKI_TMP_DIR}/wiki${FSWIKI_VERSION}/theme/resources/jsdifflib/'!!"; exit 1; }
-        REMOTE=$(git rev-parse @\{u\})
-        LOCAL=$(git rev-parse @\{0\})
-        MERGE_BASE=$(git merge-base @\{0\} @\{u\})
-        if [ "$REMOTE" == "$LOCAL" ]; then
-            echo "jsdifflib is up-to-date"
-        elif [ "$MERGE_BASE" == "$LOCAL" ]; then
-            echo "========================================================="
-            echo " Updated jsdifflib is available, git pull; and test it!! "
-            echo " If test is passed, update TESTED_JSDIFFLIB in this file."
-            echo "========================================================="
+        # mkdir -p "$./theme"
+        cd "./theme" || { echo "ERROR: could not 'cd ./theme/'!!"; exit 1; }
+        if [ ! -e "${FSWIKI_THEME}" ]; then
+            # git clone --depth 1 git@github.com:KazKobara/kati_dark.git
+            git clone --depth 1 https://github.com/KazKobara/kati_dark.git
+        elif [ ! -d "${FSWIKI_THEME}" ]; then
+            echo "WARNING: ${FSWIKI_THEME} exists but not a folder!!"
+        else
+            (cd "kati_dark" && git pull --depth 1)
         fi
     popd || exit 2
 fi
 
+# Get jsdifflib
+# in "./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}/"
+echo
+echo "=== git clone or pull 'jsdifflib' ==="
+pushd "$(pwd)" || exit 2
+    cd "./theme/resources/" || { echo "ERROR: could not 'cd ./theme/resources/'!!"; exit 1; }
+    # `git -C ./jsdifflib/ rev-parse 2>/dev/null` does not work since it is under another git repo.
+    TESTED_JSDIFFLIB=f728d45e5ccb798f35696f2ac6b763fbfc7682d0
+    if [ ! -e "jsdifflib/.git" ]; then
+        if [ -d "jsdifflib" ]; then
+            mv jsdifflib jsdifflib_org
+        fi
+        git clone https://github.com/cemerick/jsdifflib.git
+        # TODO: patch dir depends on "./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}/".
+        (cd jsdifflib && \
+        git reset --hard "${TESTED_JSDIFFLIB}" && \
+        $PATCH_COMMAND ../../../../../data/diffview_to_both_white_and_black_text.patch)
+    elif [ ! -d "jsdifflib/.git" ]; then
+        echo "WARNING: jsdifflib/.git exists but not a folder!!"
+    else
+        # (cd "jsdifflib" && git pull --depth 1)
+        pushd "$(pwd)" || exit 2
+            cd "jsdifflib" || { echo "ERROR: could not 'cd ${FSWIKI_TMP_DIR}/wiki${FSWIKI_VERSION}/theme/resources/jsdifflib/'!!"; exit 1; }
+            REMOTE=$(git rev-parse @\{u\})
+            LOCAL=$(git rev-parse @\{0\})
+            MERGE_BASE=$(git merge-base @\{0\} @\{u\})
+            if [ "$REMOTE" == "$LOCAL" ]; then
+                echo "jsdifflib is up-to-date"
+            elif [ "$MERGE_BASE" == "$LOCAL" ]; then
+                echo "========================================================="
+                echo " Updated jsdifflib is available, git pull; and test it!! "
+                echo " If test is passed, update TESTED_JSDIFFLIB in this file."
+                echo "========================================================="
+            fi
+        popd || exit 2
+    fi
 popd || exit 2
+# Now in "./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}"
+
+# Get markdown plugin
+# in "${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}"
+# cf. https://github.com/KazKobara/kati_dark/docs/markdown/markdown_plugin_for_fswiki.md
+MARKDOWN_ZIP=markdown_20120714.zip
+echo
+echo "=== Downloading markdown_20120714.zip ==="
+echo "pwd: $(pwd)"
+pushd "$(pwd)" || exit 2
+    cd "./plugin/" || { echo "ERROR: could not 'cd ./plugin/'!!"; exit 1; }
+    if [ ! -e "./markdown" ]; then
+        if [ ! -e "${MARKDOWN_ZIP}" ]; then
+            curl -o "${MARKDOWN_ZIP}" "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?file=markdown%5F20120714%2Ezip&page=BugTrack%2Dplugin%2F417&action=ATTACH"
+        fi
+        unzip "./${MARKDOWN_ZIP}"
+        # Apply a patch for Discount
+        sed -i.bk \
+            "s/^use Text::Markdown /use Text::Markdown::Discount /; " \
+            ./markdown/Markdown.pm
+    elif [ ! -d "./markdown" ]; then
+       echo "WARNING: ./markdown exists but not a folder!!"
+    fi
+popd || exit 2
+# Now in "./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}"
+
+# echo "=== Downloading Text::Markdown ==="
+#    mkdir -p ./lib/Text/
+#    if [ ! -e "./lib/Text/Markdown.pm" ]; then
+#        # https://cpan.metacpan.org/authors/id/B/BO/BOBTFISH/Text-Markdown-1.000031.tar.gz
+#        curl -o ./lib/Text/Markdown.pm -L https://raw.githubusercontent.com/bobtfish/text-markdown/master/lib/Text/Markdown.pm
+#    fi
+
+popd || exit 2
+# Now in "./${FSWIKI_TMP_DIR}/"
+popd || exit 2
+# Now in "./dockerfile_fswiki_local"
 
 ## Change group and permissions
-# Cf. https://github.com/KazKobara/dockerfile_fswiki_local
-echo
-echo "=== Changing group and permissions of ./attach/ ./backup/ ./log/ ./pdf/ ==="
-echo "=== under ${FSWIKI_SOURCE_DIR} . ==="
-pushd "$(pwd)" || exit 2
-cd "${FSWIKI_SOURCE_DIR}" || { echo "ERROR: could not 'cd ${FSWIKI_SOURCE_DIR}'!!"; exit 1; }
-# To avoid that fswiki newly creates the following folders as root.
-mkdir -p ./attach/ ./backup/ ./log/ ./pdf/
-# Change group and permissions of files/folders corresponding to
-# `Volumes:` in docker-compose.yml or `-v` in ./run_fswiki_local.sh .
-# 'sudo' is needed if FSWiki changed the owner of the files after its access to them.
-sudo chgrp -R "${GID_OF_HTTPD_SUB_PROCESSES}" attach/ config/ data/ log/
-sudo chmod -R a=rX,ug+w attach/ config/ data/ log/
-popd || exit 2
+# in ./dockerfile_fswiki_local
+bash ./change_permissions.sh || { echo "ERROR: ./change_permissions.sh failed!!"; exit 3;}
 
 # Change theme of FSWiki
-grep -qE "^theme=${FSWIKI_THEME}$|^theme=${FSWIKI_THEME} " "${FSWIKI_SOURCE_DIR}"/config/config.dat
-if [ "$?" == "1" ]; then
-    # not exist
-    sed -r -i.bk \
-        "/^theme=/d" \
-        wiki"${FSWIKI_VERSION}"/config/config.dat
-    echo "theme=${FSWIKI_THEME}" >> wiki"${FSWIKI_VERSION}"/config/config.dat
-    echo
-    echo "FSWiki's theme was changed to:"
-    echo "------------------------------"
-    grep -E "^theme=" "${FSWIKI_SOURCE_DIR}"/config/config.dat
-    echo "------------------------------"
-fi
-
+# in ./dockerfile_fswiki_local
+pushd "$(pwd)" || exit 2
+    cd "./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}" || { echo "ERROR: could not 'cd ./${FSWIKI_TMP_DIR}/${FSWIKI_SOURCE_DIR}'!!"; exit 1; }
+    grep -qE "^theme=${FSWIKI_THEME}$|^theme=${FSWIKI_THEME} " ./config/config.dat
+    if [ "$?" == "1" ]; then
+        # not exist
+        sed -E -i.bk \
+            "/^theme=/d" \
+            ./config/config.dat
+        echo "theme=${FSWIKI_THEME}" >> ./config/config.dat
+        echo
+        echo "FSWiki's theme was changed to:"
+        echo "------------------------------"
+        grep -E "^theme=" ./config/config.dat
+        echo "------------------------------"
+    fi
 popd || exit 2
+# Now in "./dockerfile_fswiki_local"
+# pushd/popd are needed since this is sourced by ./docker_build.sh.
