@@ -26,9 +26,6 @@ and so on.
 The above is the screenshot of the following markdown document (in a markdown block of FSWiki
 in the ['kati_dark' theme](https://github.com/KazKobara/kati_dark "https://github.com/KazKobara/kati_dark (in Japanese)") where other themes are available from [here](https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 (in Japanese)").
 
-<!-- markdownlint-disable MD048 -->
-<!-- Rationale: Nested fenced code -->
-
 <!--
 Including "'markdown' in double curly braces", the tag to identify markdown blocks in FSWiki, here and below causes 
 "Liquid Exception: Liquid syntax error (line 26): Variable" error in
@@ -66,7 +63,6 @@ git clone https://github.com/KazKobara/dockerfile_fswiki_local.git
 cd dockerfile_fswiki_local
 ```
 ~~~
-<!-- markdownlint-enable MD048 -->
 
 ## How to use
 
@@ -105,8 +101,7 @@ If they pop up the following window on Windows, click the "cancel" button to blo
 ![cancel](./data/warning.png "Push the cancel button")
 
 <!--
-<img src="./data/warning.png_" alt="Push the cancel button" width="500" title="Push the cancel button"/>
-
+<img src="./data/warning.png" alt="Push the cancel button" width="500" title="Push the cancel button"/>
 <img src="./data/warning.png" alt="Push the cancel button" width="80%" title="Push the cancel button"/>
 -->
 
@@ -287,6 +282,60 @@ then
 ~~~shell
 ./test.sh
 ~~~
+
+<!--
+============ Test Summary (e26268b) =============
+====== Size (of all the 'fswiki_*' images) ======
+fswiki_ubuntu_local            3_6_5      4a7281cbe640   3 seconds ago        250MB
+fswiki_ubuntu_local_dc         3_6_5      648c48bdb7b3   43 seconds ago       250MB
+fswiki_ubuntu_local            latest     8e0b91c54ee4   About a minute ago   251MB
+fswiki_ubuntu_local_dc         latest     162522d657d4   2 minutes ago        251MB
+fswiki_alpine_local            3_6_5      47733a5e6f48   2 minutes ago        73.8MB
+fswiki_alpine_local_dc         3_6_5      9312e94d8b3e   13 minutes ago       73.8MB
+fswiki_alpine_local            latest     c73fdd6ad2d4   23 minutes ago       75.2MB
+fswiki_alpine_local_dc         latest     d66e553ed271   34 minutes ago       75.2MB
+
+=== Versions of fswiki_alpine_local_dc:latest ===
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.34.0)
+-------------------------------------------------
+=== Versions of fswiki_alpine_local:latest ======
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.34.0)
+-------------------------------------------------
+=== Versions of fswiki_alpine_local_dc:3_6_5 ====
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.34.0)
+-------------------------------------------------
+=== Versions of fswiki_alpine_local:3_6_5 =======
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.34.0)
+-------------------------------------------------
+=== Versions of fswiki_ubuntu_local_dc:latest ===
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.32.1)
+-------------------------------------------------
+=== Versions of fswiki_ubuntu_local:latest ======
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.32.1)
+-------------------------------------------------
+=== Versions of fswiki_ubuntu_local_dc:3_6_5 ====
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.32.1)
+-------------------------------------------------
+=== Versions of fswiki_ubuntu_local:3_6_5 =======
+5.10.60.1-microsoft-standard-WSL2
+Apache/2.4.52
+perl(v5.32.1)
+-------------------------------------------------
+-->
 
 ## Setting for Web Security Check
 

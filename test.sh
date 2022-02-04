@@ -120,7 +120,7 @@ mv .env.org .env
 
 echo
 echo
-echo "================= Test Summary =================="
+echo "============ Test Summary ($(git log -1 --pretty=%h)) ============="
 echo "====== Size (of all the 'fswiki_*' images) ======"
 docker images | grep fswiki_
 echo
