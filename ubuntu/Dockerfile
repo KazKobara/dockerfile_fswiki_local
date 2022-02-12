@@ -47,7 +47,7 @@ RUN apt-get update \
     && git fetch --depth 400 -n discount \
     && git cherry-pick -n b002a5a \
     && perl Makefile.PL && make && make install) \
-    && apt-get purge -y git make clang gcc \
+    && apt-get purge -y git make gcc libperl-dev\
     && apt-get autoremove -y
 #
 #    && rm -rf text-markdown-discount \
