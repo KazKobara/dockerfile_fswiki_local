@@ -83,11 +83,9 @@ WORKDIR /usr/local/apache2/htdocs
 # TODO: owner, group, and permissions should be harmonized with FSWiki setup.sh
 #       and docker -v.
 # Due to "AllowOverride None", append copied .htaccess to httpd.conf.
-RUN chmod 500 ./setup.sh; ./setup.sh; \
+RUN sh ./setup.sh; \
     rm -rf ./setup.sh ./release.sh .git/ ./theme/kati_dark/.git/ ./theme/resources/jsdifflib/.git/; \
-    chown -R ${owner_group} attach/ config/ data/ log/; \
+    chown -R ${owner_group} attach/ config/ data/ log/ backup/ pdf/; \
     chmod -R o-rwx ./; \
-    chmod -R o+r ./config ./log; \
     chmod 444 /usr/local/apache2/conf/extra/httpd-security-fswiki-local.conf
-# The following is done by `./get_fswiki.sh` and the `COPY --chown` above.
-#   ;\ chown -R ${owner_group} ./attach ./backup ./config ./data ./log ./pdf
+# Despite `COPY --chown`, ./setup.sh creates missing folders as root.

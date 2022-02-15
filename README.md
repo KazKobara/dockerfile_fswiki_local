@@ -365,7 +365,7 @@ Alternatively, set manually permissions and group of folders (and their files), 
 If the folders are `attach/ config/ data/ log/`, the commands are as follows:
 
   ~~~console
-  chmod -R a=rX,ug+w attach/ config/ data/ log/
+  chmod -R a-rwx,ug+rwX attach/ config/ data/ log/
   chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
   ~~~
 

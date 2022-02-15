@@ -56,7 +56,8 @@ mkdir -p ./attach/ ./backup/ ./log/ ./pdf/
 # `Volumes:` in docker-compose.yml or `-v` in ./run_fswiki_local.sh .
 # 'sudo' is needed if FSWiki changed the owner of the files after its access to them.
 sudo chgrp -R "${GID_OF_HTTPD_SUB_PROCESSES}" attach/ config/ data/ log/
-sudo chmod -R a=rX,ug+w attach/ config/ data/ log/
+#sudo chmod -R a=rX,ug+w,o-rwx attach/ config/ data/ log/
+sudo chmod -R a-rwx,ug+rwX attach/ config/ data/ log/
 set +x
 #popd || exit 2
 
