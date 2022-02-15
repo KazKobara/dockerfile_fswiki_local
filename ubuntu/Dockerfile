@@ -29,26 +29,41 @@ ARG require_ip
 ARG fswiki_tmp_dir
 ARG fswiki_version
 ENV DEBCONF_NOWARNINGS yes
-# ca-certificates is for wget
-# libtext-markdown-perl is for Text::Markdown 1.000031
-# libtext-markdown-discount-perl is for Text::Markdown::Discount 0.12
-# git make gcc libperl-dev are for Text::Markdown::Discount 0.13 or later
-# git cherry-pick b002a5a is to fix https://github.com/Orc/discount/issues/189 .
+# ca-certificates is for git (and curl/wget).
+# libtext-markdown-perl is for Text::Markdown
+#   (1.000031 as of Jan, 2022).
+# libtext-markdown-discount-perl is for Text::Markdown::Discount
+#   (0.12+b1 and Discount 2.2.6-1 as of Jan, 2022).
+# `&& git make gcc libperl-dev \` are for Text::Markdown::Discount 0.13 or later
+# `&& git cherry-pick b002a5a \` is to fix https://github.com/Orc/discount/issues/189 
+#   for Text::Markdown::Discount 0.13.
+# `&& git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \`
+#   is tentative until 
+#   both https://github.com/sekimura/text-markdown-discount/pull/25
+#   and  https://github.com/adamatousek/text-markdown-discount/pull/1 are accepted.
+# `&& addgroup --gid 82 www-data-alpine \`
+# `&& addgroup www-data www-data-alpine \`
+#   are to share the data volume with Alpine.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         perl \
-        libcgi-session-perl \
         ca-certificates \
+        libcgi-session-perl \
         git make gcc libperl-dev\
+    && addgroup --gid 82 www-data-alpine \
+    && addgroup www-data www-data-alpine \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org \
-    && git clone https://github.com/sekimura/text-markdown-discount.git -b 0.13 --depth 1 \
+    && git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \
     && (cd text-markdown-discount \
-    && git remote add -t v2maint discount https://github.com/Orc/discount.git \
-    && git fetch --depth 400 -n discount \
-    && git cherry-pick -n b002a5a \
     && perl Makefile.PL && make && make install) \
-    && apt-get purge -y git make gcc libperl-dev\
+    && apt-get purge -y git make gcc libperl-dev \
     && apt-get autoremove -y
+#
+#    && git clone https://github.com/sekimura/text-markdown-discount.git -b 0.13 --depth 1 \
+#    && (cd text-markdown-discount \
+#    && git remote add -t v2maint discount https://github.com/Orc/discount.git \
+#    && git fetch --depth 400 -n discount \
+#    && git cherry-pick -n b002a5a \
 #
 #    && rm -rf text-markdown-discount \
 #

@@ -8,9 +8,11 @@
 ### Added
 
 - plugin/markdown/Markdown.pm and its security settings for Content Security Policy (CSP).
+- Setting for sharing data volumes on multiple Operating Systems.
 
 ### Changed
 
+- Text::Markdown::Discount to prospective 0.14 to test.
 - Separated change_permissions.sh from get_fswiki.sh.
 
 ## [0.0.3]

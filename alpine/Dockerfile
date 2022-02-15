@@ -29,21 +29,34 @@ ARG require_ip
 ARG fswiki_tmp_dir
 ARG fswiki_version
 ENV DEBCONF_NOWARNINGS yes
-# git cmake make gcc musl-dev perl-dev are for Text::Markdown::Discount 0.13 or later
-# git cherry-pick b002a5a is to fix https://github.com/Orc/discount/issues/189 .
+# `&& git make gcc musl-dev perl-dev \` are for Text::Markdown::Discount 0.13 or later
+# `&& git cherry-pick b002a5a \` is to fix https://github.com/Orc/discount/issues/189 .
+# `&& git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \`
+#   is tentative until 
+#   both https://github.com/sekimura/text-markdown-discount/pull/25
+#   and  https://github.com/adamatousek/text-markdown-discount/pull/1 are accepted.
+# `&& sed -r -i.bk "s/&& make && make test)/&& make/;" Makefile.PL \` 
+#   is tentative until https://github.com/Orc/discount/pull/252 is accepted.
+# `&& addgroup www-data xfs \`
+#    is to share data volume with Ubuntu/Debian.
 RUN apk update \
     && apk add \
         perl \
         perl-cgi-fast \
-        git cmake make gcc musl-dev perl-dev \
+        git make gcc musl-dev perl-dev \
+    && addgroup www-data xfs \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org \
-    && git clone https://github.com/sekimura/text-markdown-discount.git -b 0.13 --depth 1 \
+    && git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \
     && (cd text-markdown-discount \
-    && git remote add -t v2maint discount https://github.com/Orc/discount.git \
-    && git fetch --depth 400 -n discount \
-    && git cherry-pick -n b002a5a \
+    && sed -r -i.bk 's/ && make test)/ )/;' Makefile.PL \
     && perl Makefile.PL && make && make install) \
-    && apk del git cmake make gcc musl-dev perl-dev
+    && apk del git make gcc musl-dev perl-dev
+#
+#    && git clone https://github.com/sekimura/text-markdown-discount.git -b 0.13 --depth 1 \
+#    && (cd text-markdown-discount \
+#    && git remote add -t v2maint discount https://github.com/Orc/discount.git \
+#    && git fetch --depth 400 -n discount \
+#    && git cherry-pick -n b002a5a \
 #
 #    && rm -rf text-markdown-discount \
 #
