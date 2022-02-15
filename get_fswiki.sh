@@ -14,6 +14,8 @@ if [ "$1" != "" ];then
     fi
 fi
 
+GIT_PULL="git pull --depth 1"
+# GIT_PULL="git pull --unshallow"
 FSWIKI_SOURCE_DIR="wiki${FSWIKI_VERSION}"
 FSWIKI_ZIP="${FSWIKI_SOURCE_DIR}.zip"
 PATCH_COMMAND="git --git-dir= apply"
@@ -111,7 +113,7 @@ elif [ ! -d "${FSWIKI_SOURCE_DIR}" ]; then
 else
     # The holder exists.
     if [ "$FSWIKI_VERSION" == "latest" ]; then
-	    (cd "${FSWIKI_SOURCE_DIR}" && git pull --depth 1)
+	    (cd "${FSWIKI_SOURCE_DIR}" && ${GIT_PULL})
     fi
 fi
 
@@ -135,7 +137,12 @@ if [ "${FSWIKI_THEME}" == "kati_dark" ]; then
         elif [ ! -d "${FSWIKI_THEME}" ]; then
             echo "WARNING: ${FSWIKI_THEME} exists but not a folder!!"
         else
-            (cd "kati_dark" && git pull --depth 1)
+            (cd "kati_dark" && ${GIT_PULL})
+        fi
+        # Hard link if not exists to maintain consistency between them.
+        # TODO: On WSL1/2, becomes a copy after edit.
+        if [ ! -e "../data/Help%2FMarkdown.wiki" ]; then
+            ln kati_dark/docs/markdown/Help%2FMarkdown.wiki ../data/Help%2FMarkdown.wiki 
         fi
     popd || exit 2
 fi
@@ -160,7 +167,7 @@ pushd "$(pwd)" || exit 2
     elif [ ! -d "jsdifflib/.git" ]; then
         echo "WARNING: jsdifflib/.git exists but not a folder!!"
     else
-        # (cd "jsdifflib" && git pull --depth 1)
+        # (cd "jsdifflib" && ${GIT_PULL})
         pushd "$(pwd)" || exit 2
             cd "jsdifflib" || { echo "ERROR: could not 'cd ${FSWIKI_TMP_DIR}/wiki${FSWIKI_VERSION}/theme/resources/jsdifflib/'!!"; exit 1; }
             REMOTE=$(git rev-parse @\{u\})
@@ -215,10 +222,6 @@ popd || exit 2
 popd || exit 2
 # Now in "./dockerfile_fswiki_local"
 
-## Change group and permissions
-# in ./dockerfile_fswiki_local
-bash ./change_permissions.sh || { echo "ERROR: ./change_permissions.sh failed!!"; exit 3;}
-
 # Change theme of FSWiki
 # in ./dockerfile_fswiki_local
 pushd "$(pwd)" || exit 2
@@ -239,3 +242,8 @@ pushd "$(pwd)" || exit 2
 popd || exit 2
 # Now in "./dockerfile_fswiki_local"
 # pushd/popd are needed since this is sourced by ./docker_build.sh.
+
+## Change group and permissions
+# in ./dockerfile_fswiki_local
+bash ./change_permissions.sh || { echo "ERROR: ./change_permissions.sh failed!!"; exit 3;}
+## This group/permissions change must come last.

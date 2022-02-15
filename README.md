@@ -337,11 +337,13 @@ perl(v5.32.1)
 -------------------------------------------------
 -->
 
-## Setting for Web Security Check
+## Settings
+
+### Web Security Check
 
 To allow access from other docker containers for web security check using OWASP ZAP, Nikto and so on, edit `FSWIKI_PORT` in `.env` and set their target IP addresses to any IP address assigned to the host OS.
 
-## Setting for Markdown Plugin and CSP
+### Markdown Plugin and CSP
 
 Cf. [Help/Markdown] though it is in Japanese.
 
@@ -351,31 +353,7 @@ Cf. [Help/Markdown] though it is in Japanese.
 [Markdown Plugin]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/markdown_plugin_for_fswiki.md "https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/markdown_plugin_for_fswiki.md"
 -->
 
-## Trouble-shooting
-
-### 'Permission denied' or 'Lock is busy'
-
-If your web browser displays any of the following errors,
-
-  ~~~text
-  Permission denied at lib/Wiki/DefaultStorage.pm line 114. 
-  ~~~
-
-  ~~~text
-  Permission denied: ./log at lib/CGI2.pm line 34. 
-  ~~~
-
-  ~~~text
-  You don't have permission to access this resource.
-  ~~~
-
-  ~~~text
-  Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
-  ~~~
-
-check and change file permissions and group as follows:
-
-#### How to set permissions and group
+### Permissions and group
 
 Check and/or edit `FSWIKI_DATA_ROOT` in `.env`. Then in the same folder as `.env`, run
 
@@ -387,15 +365,15 @@ Alternatively, set manually permissions and group of folders (and their files), 
 If the folders are `attach/ config/ data/ log/`, the commands are as follows:
 
   ~~~console
-  chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
   chmod -R a=rX,ug+w attach/ config/ data/ log/
+  chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
   ~~~
 
  <!--find . -type f -executable -print-->
 
 where `<gid_of_httpd_sub-processes>` is
 
-|<gid_of_httpd_sub-processes>|(uid_of_httpd_subprocesses)|group|base|httpd|
+|<gid_of_httpd_sub-processes>|(uid_of_httpd_sub-processes)|group|base|httpd|
 | :---: | :---: | :---: | :---: | :---: |
 |33|(33)|www-data|ubuntu|2.4.52|
 |82|(82)|www-data|alpine|2.4.52|
@@ -403,6 +381,47 @@ where `<gid_of_httpd_sub-processes>` is
 |2|(2)|daemon|alpine|2.4.46|
 
 > **NOTE:** `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
+
+### Permission to share data volume on multiple Operating Systems
+
+On each OS, add the username of the httpd_sub-process of the OS to the group corresponding to the other OS, e.g., to share Alpine folders on Ubuntu:
+
+  ~~~console
+  addgroup --gid 82 www-data-alpine
+  addgroup www-data www-data-alpine
+  ~~~
+
+and vice versa on Alpine:
+
+  ~~~console
+  addgroup www-data xfs
+  ~~~
+
+where gid of xfs is 33 whose group is www-data on Ubuntu.
+
+## Trouble-shooting
+
+### 'Permission denied' or 'Lock is busy'
+
+If your web browser displays any of the following errors,
+
+  ~~~text
+  Permission denied at lib/Wiki/DefaultStorage.pm line 114.
+  ~~~
+
+  ~~~text
+  Permission denied: ./log at lib/CGI2.pm line 34.
+  ~~~
+
+  ~~~text
+  You don't have permission to access this resource.
+  ~~~
+
+  ~~~text
+  Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
+  ~~~
+
+check and change file permissions and group as above.
 
 ### Software Error
 
