@@ -17,7 +17,7 @@ and so on.
 
 ## Features
 
-### Markdown Plugin with CSP (Content Security Policy)
+Markdown Plugin with CSP (Content Security Policy), LaTeX (and MathML) rendering using MathJax.
 
 ![markdown_screenshot](https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/markdown_screenshot.png "screenshot")
 
@@ -38,7 +38,7 @@ Including "'markdown' in double curly braces", the tag to identify markdown bloc
 ## Syntax
 
 1. **Inline _scripts_** and _**unintended** inline styles_ are ~~allowed~~ blocked by CSP.
-    - <span type="text/css" class="orange">Coloring</span> shall be realized using style-sheet defined {type, class, id} selectors.
+    - <span type="text/css" class="orange">Coloring</span> shall be realized using style-sheet defined {type, class} selectors.
 
 ### Definition List
 
@@ -62,6 +62,16 @@ CSP
 git clone https://github.com/KazKobara/dockerfile_fswiki_local.git
 cd dockerfile_fswiki_local
 ```
+
+### \\( \LaTeX \\) (and MathML) Using MathJax
+
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+It can show equations, and so on, beautifully, such as
+\\( \sin^{2} \theta + \cos^{2} \theta = 1 \\),
+\\( \tan \theta = \frac{\sin \theta}{\cos \theta} \\)  and below:
+\\[ \lim_{h \to 0} \frac{f(x+h) - f(x)}{h} \\]
+
 ~~~
 
 ## How to use
@@ -94,7 +104,7 @@ vim .env
 ./get_fswiki.sh
 ~~~
 
-For the following steps, you can use docker-compose or shell scripts depending on your environment.
+In the following steps, you can choose either the docker-compose version or the shell script version, depending on your environment.
 
 If they pop up the following window on Windows, click the "cancel" button to block the access from outside your PC.
 
@@ -105,7 +115,7 @@ If they pop up the following window on Windows, click the "cancel" button to blo
 <img src="./data/warning.png" alt="Push the cancel button" width="80%" title="Push the cancel button"/>
 -->
 
-### 2. Build and run using docker-compose
+### 2. Docker-compose Version
 
 #### 2.1 Build image
 
@@ -139,7 +149,7 @@ docker-compose down
 
 For more options, cf. [reference of docker-compose](https://docs.docker.com/compose/reference/).
 
-### 2. Build and run using shell scripts
+### 2. Shell Script Version
 
 #### 2.1 Build image
 
@@ -232,7 +242,7 @@ There are two ways to realize this, one creates new folders, the other uses one 
 - The differences are the network addresses to be assigned and IP addresses that can access the fswiki server in the docker network.
   - docker-compose uses 10.0.0.0/24 and httpd accepts access only from 10.0.0.1.
   - shell version (docker build) uses 172.17.0.0/16 and httpd accepts access only from 172.17.0.1.
-  - See [this page](https://github.com/KazKobara/tips-jp/blob/gh-pages/docker/subnet.md) as well (after translating it from Japanese).
+  - See [this page](https://github.com/KazKobara/tips-jp/blob/gh-pages/docker/subnet.md) as well (after translation from Japanese).
 
 ## Docker Image Sizes
 
@@ -343,14 +353,28 @@ perl(v5.32.1)
 
 To allow access from other docker containers for web security check using OWASP ZAP, Nikto and so on, edit `FSWIKI_PORT` in `.env` and set their target IP addresses to any IP address assigned to the host OS.
 
-### Markdown Plugin and CSP
+### Help of Markdown Plugin with CSP, LaTeX and MathML rendering using MathJax
 
-Cf. [Help/Markdown] though it is in Japanese.
+- On your web browser displaying FSWiki launched by this docker file, click and see `Help/Markdown` in the menu (after translation from Japanese).
 
-[Help/Markdown]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/Help%252FMarkdown.wiki "https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/Help%252FMarkdown.wiki"
+Or
+
+1. Get the HTML files:
+
+    ~~~shell
+    git clone https://github.com/KazKobara/kati_dark.git
+    cd ./kati_dark/docs/markdown/
+    ~~~
+
+1. Open Help_Markdown_for_FreeStyleWiki.htm with your web browser
+1. (Translate Japanese to your language).
 
 <!--
-[Markdown Plugin]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/markdown_plugin_for_fswiki.md "https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/markdown_plugin_for_fswiki.md"
+[Help/Markdown (FSWiki file)]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/Help%252FMarkdown.wiki
+
+[Help/Markdown (HTML file)]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/Help_Markdown_for_FreeStyleWiki.htm
+
+[Markdown Plugin]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/markdown_plugin_for_fswiki.md
 -->
 
 ### Permissions and group
