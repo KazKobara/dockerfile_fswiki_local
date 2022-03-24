@@ -248,14 +248,14 @@ There are two ways to realize this, one creates new folders, the other uses one 
 
 |tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
 | :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.2|latest (4ba68e3)|alpine|5.10.60.1, 4.19.76|2.4.52|5.34.0|71.6|
-|0.0.2|3_6_5|alpine|5.10.60.1, 4.19.76|2.4.52|5.34.0|70.2|
+|0.0.2|latest (4ba68e3)|alpine|5.10.60.1, 4.19.76|2.4.52 *1|5.34.0|71.6|
+|0.0.2|3_6_5|alpine|5.10.60.1, 4.19.76|2.4.52 *1|5.34.0|70.2|
 |0.0.1|3_6_5|alpine|4.19.76|2.4.46 *1|5.30.3|62.1|
-|0.0.2|latest (4ba68e3)|ubuntu|5.10.60.1|2.4.52|5.32.1|221|
-|0.0.2|3_6_5|ubuntu|5.10.60.1|2.4.52|5.32.1|220|
+|0.0.2|latest (4ba68e3)|ubuntu|5.10.60.1|2.4.52 *1|5.32.1|221|
+|0.0.2|3_6_5|ubuntu|5.10.60.1|2.4.52 *1|5.32.1|220|
 |0.0.1|3_6_5|ubuntu|4.19.76|2.4.46 *1|5.28.1|209|
 
-*1 httpd 2.4.51 and earlier have [vulnerabilities](https://httpd.apache.org/security/vulnerabilities_24.html), cf. step 3 to update httpd.
+*1 httpd 2.4.52 and earlier have [vulnerabilities](https://httpd.apache.org/security/vulnerabilities_24.html). To update httpd, cf. the above step 3.
 
 The following commands show the sizes and versions:
 
