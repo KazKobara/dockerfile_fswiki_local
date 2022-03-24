@@ -7,6 +7,7 @@
 
 ### Added
 
+- LaTeX and MathML rendering using MathJax.
 - plugin/markdown/Markdown.pm and its security settings for Content Security Policy (CSP).
 - Setting for sharing data volumes on multiple Operating Systems.
 
