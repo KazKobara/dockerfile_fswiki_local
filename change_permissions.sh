@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This file is a part of https://github.com/KazKobara/dockerfile_fswiki_local
 # and called from ./get_fswiki.sh .
 #

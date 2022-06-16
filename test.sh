@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Test script for https://github.com/KazKobara/dockerfile_fswiki_local .
 #

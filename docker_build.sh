@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Cf. https://github.com/KazKobara/dockerfile_fswiki_local
 
 # IP or network addresses to be accessed from:

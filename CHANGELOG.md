@@ -13,7 +13,9 @@
 ### Changed
 
 - Text::Markdown::Discount to prospective 0.14 to test.
+- `check_versions.sh` shows the version of markdown as well.
 - Separated change_permissions.sh from get_fswiki.sh.
+- `#!/bin/bash` to `#!/usr/bin/env bash`.
 
 ## [0.0.3]
 

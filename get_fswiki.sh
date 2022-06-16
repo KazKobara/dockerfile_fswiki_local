@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # usage:
 #   $ ./get_fswiki.sh [FSWIKI_VERSION [FSWIKI_TMP_DIR]]
 #

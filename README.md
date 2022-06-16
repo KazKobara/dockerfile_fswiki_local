@@ -119,6 +119,8 @@ or on Windows add `.exe` after docker-compose, such as
 docker-compose.exe build
 ~~~
 
+> **NOTE:** Docker Alpine image takes time to resolve FQDN.
+
 #### 2.2 Run
 
 ~~~shell
@@ -146,6 +148,8 @@ For more options, cf. [reference of docker-compose](https://docs.docker.com/comp
 ~~~shell
 ./docker_build.sh
 ~~~
+
+> **NOTE:** Docker Alpine image takes time to resolve FQDN.
 
 #### 2.2 Run server for local use
 
@@ -193,7 +197,7 @@ docker pull httpd:latest
 
 #### 3.2 Rebuild and run
 
-Run step 2.
+Run step 2 of docker-compose or shell scripts, depending on the one you use.
 
 <!--
 ~~~shell
