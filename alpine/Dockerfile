@@ -36,7 +36,10 @@ ENV DEBCONF_NOWARNINGS yes
 #   both https://github.com/sekimura/text-markdown-discount/pull/25
 #   and  https://github.com/adamatousek/text-markdown-discount/pull/1 are accepted.
 # `&& sed -r -i.bk "s/&& make && make test)/&& make/;" Makefile.PL \` 
-#   is tentative until https://github.com/Orc/discount/pull/252 is accepted.
+#   is needed earlier than Discount markdown 2.2.7b, which is newer than 2.2.7,
+#   and at a631dde https://github.com/Orc/discount/pull/252 has solved.
+#   Makefile.PL of "text-markdown-discount.git -b discount-2.2.7" uses
+#   the newest Discount markdown within the v2maint branch.
 # `&& addgroup www-data xfs \`
 #    is to share data volume with Ubuntu/Debian.
 RUN apk update \
@@ -52,6 +55,7 @@ RUN apk update \
     && perl Makefile.PL && make && make install) \
     && apk del git make gcc musl-dev perl-dev
 #
+# For Text::Markdown::Discount 0.13
 #    && git clone https://github.com/sekimura/text-markdown-discount.git -b 0.13 --depth 1 \
 #    && (cd text-markdown-discount \
 #    && git remote add -t v2maint discount https://github.com/Orc/discount.git \
