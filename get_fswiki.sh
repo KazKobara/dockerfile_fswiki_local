@@ -14,8 +14,12 @@ if [ "$1" != "" ];then
     fi
 fi
 
-GIT_PULL="git pull --depth 1"
-# GIT_PULL="git pull --unshallow"
+## Change 'depth 1' to 'unshallow' to pull updates
+GIT_PULL="git pull --unshallow"
+## Updates are added as modifications. 
+# GIT_PULL="git pull --depth 1 --allow-unrelated-histories"
+## Causes "fatal: refusing to merge unrelated histories"
+# GIT_PULL="git pull --depth 1
 FSWIKI_SOURCE_DIR="wiki${FSWIKI_VERSION}"
 FSWIKI_ZIP="${FSWIKI_SOURCE_DIR}.zip"
 PATCH_COMMAND="git --git-dir= apply"
