@@ -1,9 +1,9 @@
 # Change Log
 
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
-<!-- ## [Unreleased] -->
+<!-- ## [Unreleased 0.0.5] -->
 
-## [Unreleased 0.0.4]
+## [0.0.4]
 
 ### Added
 
