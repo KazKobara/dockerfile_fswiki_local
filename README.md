@@ -6,9 +6,6 @@
 This Dockerfile is to launch FSWiki that is used only from a local web browser.
 
 ![screenshot](https://raw.githubusercontent.com/KazKobara/kati_dark/main/docs/screenshot.png "screenshot")
-<!--
-![](https://fswiki.osdn.jp/cgi-bin/wiki.cgi?action=ATTACH&page=BugTrack%2Dtheme%2F30&file=screenshot%5Fsmall%2Epng)
--->
 
 > **CAUTION:**
 To expose it to the public network, additional security considerations
@@ -108,11 +105,9 @@ In the following steps, you can choose either the docker-compose version or the 
 
 If they pop up the following window on Windows, click the "cancel" button to block the access from outside your PC.
 
-![cancel](./data/warning.png "Push the cancel button")
-
+<img src="https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/warning.png" width="500" alt="cancel" title="Push the cancel button"/>
 <!--
-<img src="./data/warning.png" alt="Push the cancel button" width="500" title="Push the cancel button"/>
-<img src="./data/warning.png" alt="Push the cancel button" width="80%" title="Push the cancel button"/>
+![cancel](./data/warning.png "Push the cancel button")
 -->
 
 ### 2. Docker-compose Version
@@ -193,13 +188,13 @@ where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version
 
  Depending on the base os of the docker container, run the following:
 
-For alpine:
+For Alpine:
 
 ~~~shell
 docker pull httpd:alpine
 ~~~
 
-For ubuntu:
+For Debian/Ubuntu:
 
 ~~~shell
 docker pull httpd:latest
@@ -252,14 +247,17 @@ There are two ways to realize this, one creates new folders, the other uses one 
 
 |tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
 | :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.2|latest (4ba68e3)|alpine|5.10.60.1, 4.19.76|2.4.52 *1|5.34.0|71.6|
-|0.0.2|3_6_5|alpine|5.10.60.1, 4.19.76|2.4.52 *1|5.34.0|70.2|
-|0.0.1|3_6_5|alpine|4.19.76|2.4.46 *1|5.30.3|62.1|
-|0.0.2|latest (4ba68e3)|ubuntu|5.10.60.1|2.4.52 *1|5.32.1|221|
-|0.0.2|3_6_5|ubuntu|5.10.60.1|2.4.52 *1|5.32.1|220|
-|0.0.1|3_6_5|ubuntu|4.19.76|2.4.46 *1|5.28.1|209|
+|0.0.2|latest (4ba68e3)|Alpine \*1|5.10.60.1, 4.19.76|2.4.52 \*1|5.34.0|71.6|
+|0.0.2|3_6_5|Alpine \*1|5.10.60.1, 4.19.76|2.4.52 \*1|5.34.0|70.2|
+|0.0.1|3_6_5|Alpine \*1|4.19.76|2.4.46 \*1|5.30.3|62.1|
+|0.0.2|latest (4ba68e3)|Debian|5.10.60.1|2.4.52 \*1|5.32.1|221|
+|0.0.2|3_6_5|Debian|5.10.60.1|2.4.52 \*1|5.32.1|220|
+|0.0.1|3_6_5|Debian|4.19.76|2.4.46 \*1|5.28.1|209|
 
-*1 httpd 2.4.52 and earlier have [vulnerabilities](https://httpd.apache.org/security/vulnerabilities_24.html). To update httpd, cf. the above step 3.
+> \*1 The following versions have vulnerabilities. To update, cf. the above step 3.
+>
+> - [httpd 2.4.53 and earlier](https://httpd.apache.org/security/vulnerabilities_24.html).
+> - OSes using [busybox 1.35 and earlier](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox).
 
 The following commands show the sizes and versions:
 
@@ -296,60 +294,6 @@ then
 ~~~shell
 ./test.sh
 ~~~
-
-<!--
-============ Test Summary (e26268b) =============
-====== Size (of all the 'fswiki_*' images) ======
-fswiki_ubuntu_local            3_6_5      4a7281cbe640   3 seconds ago        250MB
-fswiki_ubuntu_local_dc         3_6_5      648c48bdb7b3   43 seconds ago       250MB
-fswiki_ubuntu_local            latest     8e0b91c54ee4   About a minute ago   251MB
-fswiki_ubuntu_local_dc         latest     162522d657d4   2 minutes ago        251MB
-fswiki_alpine_local            3_6_5      47733a5e6f48   2 minutes ago        73.8MB
-fswiki_alpine_local_dc         3_6_5      9312e94d8b3e   13 minutes ago       73.8MB
-fswiki_alpine_local            latest     c73fdd6ad2d4   23 minutes ago       75.2MB
-fswiki_alpine_local_dc         latest     d66e553ed271   34 minutes ago       75.2MB
-
-=== Versions of fswiki_alpine_local_dc:latest ===
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.34.0)
--------------------------------------------------
-=== Versions of fswiki_alpine_local:latest ======
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.34.0)
--------------------------------------------------
-=== Versions of fswiki_alpine_local_dc:3_6_5 ====
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.34.0)
--------------------------------------------------
-=== Versions of fswiki_alpine_local:3_6_5 =======
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.34.0)
--------------------------------------------------
-=== Versions of fswiki_ubuntu_local_dc:latest ===
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.32.1)
--------------------------------------------------
-=== Versions of fswiki_ubuntu_local:latest ======
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.32.1)
--------------------------------------------------
-=== Versions of fswiki_ubuntu_local_dc:3_6_5 ====
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.32.1)
--------------------------------------------------
-=== Versions of fswiki_ubuntu_local:3_6_5 =======
-5.10.60.1-microsoft-standard-WSL2
-Apache/2.4.52
-perl(v5.32.1)
--------------------------------------------------
--->
 
 ## Settings
 
@@ -403,16 +347,16 @@ where `<gid_of_httpd_sub-processes>` is
 
 |<gid_of_httpd_sub-processes>|(uid_of_httpd_sub-processes)|group|base|httpd|
 | :---: | :---: | :---: | :---: | :---: |
-|33|(33)|www-data|ubuntu|2.4.52|
-|82|(82)|www-data|alpine|2.4.52|
-|1|(1)|daemon|ubuntu|2.4.46|
-|2|(2)|daemon|alpine|2.4.46|
+|33|(33)|www-data|Debian/Ubuntu|2.4.52|
+|82|(82)|www-data|Alpine|2.4.52|
+|1|(1)|daemon|Debian/Ubuntu|2.4.46|
+|2|(2)|daemon|Alpine|2.4.46|
 
 > **NOTE:** `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
 
 ### Permission to share data volume on multiple Operating Systems
 
-On each OS, add the username of the httpd_sub-process of the OS to the group corresponding to the other OS, e.g., to share Alpine folders on Ubuntu:
+On each OS, add the username of the httpd_sub-process of the OS to the group corresponding to the other OS, e.g., to share Alpine folders on Debian/Ubuntu:
 
   ~~~console
   addgroup --gid 82 www-data-alpine
@@ -425,7 +369,7 @@ and vice versa on Alpine:
   addgroup www-data xfs
   ~~~
 
-where gid of xfs is 33 whose group is www-data on Ubuntu.
+where gid of xfs is 33 whose group is www-data on Debian/Ubuntu.
 
 ## Trouble-shooting
 
@@ -462,7 +406,7 @@ If your web browser displays the following error, check or change `FSWIKI_DATA_R
 
 ### Can't locate CGI.pm
 
-If the docker outputs the following log, install Perl CGI with `apt-get install -y libcgi-session-perl` for Ubuntu, `apk add -y perl-cgi-fast` for Alpine, and so on.
+If the docker outputs the following log, install Perl CGI with `apt-get install -y libcgi-session-perl` for Debian/Ubuntu, `apk add -y perl-cgi-fast` for Alpine, and so on.
 
   ~~~text
   Can't locate CGI.pm in @INC (you may need to install the CGI module) (...) at lib/CGI2.pm line 7.
