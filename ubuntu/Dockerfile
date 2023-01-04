@@ -42,7 +42,7 @@ ENV DEBCONF_NOWARNINGS yes
 #   both https://github.com/sekimura/text-markdown-discount/pull/25
 #   and  https://github.com/adamatousek/text-markdown-discount/pull/1 are accepted.
 # `&& addgroup --gid 82 www-data-alpine \`
-# `&& addgroup www-data www-data-alpine \`
+# `&& adduser www-data www-data-alpine \`
 #   are to share the data volume with Alpine.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -51,7 +51,7 @@ RUN apt-get update \
         libcgi-session-perl \
         git make gcc libperl-dev\
     && addgroup --gid 82 www-data-alpine \
-    && addgroup www-data www-data-alpine \
+    && adduser www-data www-data-alpine \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org \
     && git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \
     && (cd text-markdown-discount \

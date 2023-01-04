@@ -1,20 +1,24 @@
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
 # Dockerfile and docker-compose.yml for local use FSWiki
 
+[日本語 <img src="https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/jp.svg" width="20" alt="Japanese" title="Japanese"/>](./README-jp.md)
+
 [FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi) is a Wiki clone written in Perl (and JavaScript<!-- for diffview-->).
 
-This Dockerfile is to launch FSWiki that is used only from a local web browser.
-
 ![screenshot](https://raw.githubusercontent.com/KazKobara/kati_dark/main/docs/screenshot.png "screenshot")
+
+## Features
+
+This Dockerfile is to launch FSWiki enabling:
+
+- CSP (Content Security Policy) protected Markdown Plugin ([available Markdown syntax (in Japanese)](https://kazkobara.github.io/kati_dark/docs/markdown/Help_Markdown_for_FreeStyleWiki.htm)).
+- LaTeX (and MathML) rendering using MathJax.
+- Restriction of access only from localhost.
 
 > **CAUTION:**
 To expose it to the public network, additional security considerations
 would be necessary including https use, load-balancing, permissions
 and so on.
-
-## Features
-
-Markdown Plugin with CSP (Content Security Policy), LaTeX (and MathML) rendering using MathJax.
 
 ![markdown_screenshot](https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/markdown_screenshot.png "screenshot")
 
@@ -89,11 +93,17 @@ cd dockerfile_fswiki_local
 
 #### 1.2 Edit parameters in `.env` file
 
-Especially, `FSWIKI_DATA_ROOT` that has docker shared volumes specified in `docker-compose.yml` or `run_fswiki_local.sh`, typically `attach/ config/ data/ log/`.
-
 ~~~shell
 vim .env
 ~~~
+
+| Variable | Explanation |
+|:---------|:----------|
+| `FSWIKI_DATA_ROOT` | Set the root folder that includes FSWiki's `attach/ config/ data/ log/` to share them as the container's shared volumes.\*1 |
+| `CONTAINER_CLI` | Set your container CLI, such as `docker` or `nerdctl`.
+| `COMPOSE` | Set your container composer, such as `docker-compose` or `nerdctl compose`.
+
+> - \*1 Edit `docker-compose.yml` or `run_fswiki_local.sh` you use to change the shared volumes.
 
 #### 1.3 Download FSWiki under ./tmp/
 
@@ -101,80 +111,107 @@ vim .env
 ./get_fswiki.sh
 ~~~
 
-In the following steps, you can choose either the docker-compose version or the shell script version, depending on your environment.
+### 2. Build and run
 
-If they pop up the following window on Windows, click the "cancel" button to block the access from outside your PC.
+In the following steps, you can choose either [2a. compose version](#2a-compose-version) (such as '[docker-compose](https://docs.docker.com/compose/reference/)', '[nerdctl](https://github.com/containerd/nerdctl#command-reference) compose') or [2b. shell script version](#2b-shell-script-version) depending on your environment.
+
+If they pop up the following window on Windows OS, click the "cancel" button to block the access from outside your PC.
 
 <img src="https://raw.githubusercontent.com/KazKobara/dockerfile_fswiki_local/main/data/warning.png" width="500" alt="cancel" title="Push the cancel button"/>
 <!--
 ![cancel](./data/warning.png "Push the cancel button")
 -->
 
-### 2. Docker-compose Version
+### 2a Compose Version
 
-#### 2.1 Build image
+#### 2a.1 Build image
+
+~~~shell
+nerdctl compose build
+~~~
+
+or
 
 ~~~shell
 docker-compose build
 ~~~
 
-or on Windows add `.exe` after docker-compose, such as
+> - On Windows OS, add `.exe` after the command.
+> - Building the image on Alpine takes time in `git clone`, presumably to resolve FQDN.
+
+#### 2a.2 Run
 
 ~~~shell
-docker-compose.exe build
+nerdctl compose up
 ~~~
 
-> **NOTE:** Docker Alpine image takes time to resolve FQDN.
-
-#### 2.2 Run
+or
 
 ~~~shell
 docker-compose up
 ~~~
 
-To run it in the background, add `-d` option.
+> To run it in the background, add `-d` option.
 
-#### 2.3 Browse
+#### 2a.3 Browse
 
-Access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8366/` with your web browser.
+With your web browser, access `http//localhost:<FSWIKI_PORT>/`, such as `http//localhost:8366/`, where `FSWIKI_PORT` is specified in the `.env` file.
 
-#### Stop and remove the process
+#### 2a.4 Stop and remove the process
+
+~~~shell
+nerdctl compose down
+~~~
+
+or
 
 ~~~shell
 docker-compose down
 ~~~
 
-For more options, cf. [reference of docker-compose](https://docs.docker.com/compose/reference/).
+### 2b. Shell Script Version
 
-### 2. Shell Script Version
-
-#### 2.1 Build image
+#### 2b.1 Build image
 
 ~~~shell
 ./docker_build.sh
 ~~~
 
-> **NOTE:** Docker Alpine image takes time to resolve FQDN.
+> Building the image on Alpine takes time, similar to the compose version.
 
-#### 2.2 Run server for local use
+#### 2b.2 Run server for local use
 
 ~~~shell
 ./run_fswiki_local.sh
 ~~~
 
-#### 2.3 Browse
+#### 2b.3 Browse
 
-Access `http//localhost:<FSWIKI_PORT specified in the .env file>/` such as `http//localhost:8366/` with your web browser.
+With your web browser, access `http//localhost:<FSWIKI_PORT>/`, such as `http//localhost:8366/`, where `FSWIKI_PORT` is specified in the .env file.
 
-#### Stop and remove the process
+#### 2b.4 Stop and remove the process
+
+~~~shell
+nerdctl stop <container_name> && nerdctl rm <container_name>
+~~~
+
+or
 
 ~~~shell
 docker stop <container_name> && docker rm <container_name>
 ~~~
 
-where `<container_name>` is `fswiki_alpine_local_dc` or   `fswiki_ubuntu_local_dc` for docker-compose versions, and `fswiki_alpine_local` or   `fswiki_ubuntu_local` for shell script versions.
+where `<container_name>` is `fswiki_alpine_local` for Alpine image or   `fswiki_ubuntu_local` for Debian/Ubuntu image.
 
-#### Remove the image
+> `<container_name>` of the compose version ends with `_dc`.
+
+#### 2b.5 Remove the image
+
+~~~shell
+nerdctl rmi <image_name>
+~~~
+
+or
 
 ~~~shell
 docker rmi <image_name>
@@ -188,13 +225,25 @@ where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version
 
  Depending on the base os of the docker container, run the following:
 
-For Alpine:
+For Alpine image:
+
+~~~shell
+nerdctl pull httpd:alpine
+~~~
+
+or
 
 ~~~shell
 docker pull httpd:alpine
 ~~~
 
-For Debian/Ubuntu:
+For Debian/Ubuntu image:
+
+~~~shell
+nerdctl pull httpd:latest
+~~~
+
+or
 
 ~~~shell
 docker pull httpd:latest
@@ -202,9 +251,15 @@ docker pull httpd:latest
 
 #### 3.2 Rebuild and run
 
-Run step 2 of docker-compose or shell scripts, depending on the one you use.
+Run [step 2](#2-build-and-run), depending on your environment.
 
 <!--
+~~~shell
+nerdctl compose up --no-deps --build
+~~~
+
+or
+
 ~~~shell
 docker-compose up --no-deps --build
 ~~~
@@ -212,33 +267,42 @@ docker-compose up --no-deps --build
 
 ## To run multiple/additional services
 
-There are two ways to realize this, one creates new folders, the other uses one existing folder.
+There are two ways to realize this, one creates a [new folder](#method-1-new-folder), and the other utilizes an [existing folder](#method-2-existing-folder).
 
-### In a new folder
+### Method 1: new folder
 
-1. git clone to another folder.
-1. In the new folder, edit variables according to the section of
-`##### To launch multiple independent docker processes #####` in
-[docker-compose.yml](https://github.com/KazKobara/dockerfile_fswiki_local/blob/main/docker-compose.yml).
-1. Run 1.2 and later.
+1. In [step 1.1](#11-git-clone-and-enter-the-folder), git clone to another folder.
+1. In the new folder, edit variables according to the following section in [docker-compose.yml](https://github.com/KazKobara/dockerfile_fswiki_local/blob/main/docker-compose.yml).
 
-### In an existing folder
+    ~~~yaml
+    ##### To launch multiple independent docker processes #####
+    ~~~
 
-  Edit `FSWIKI_DATA_ROOT_PRIVATE` and `FSWIKI_PORT_PRIVATE` in `.env`, then
+1. Run [step 1.2](#12-edit-parameters-in-env-file) and later.
 
-  ~~~shell
-  docker-compose -f docker-compose-multiple.yml up
-  ~~~
+### Method 2: existing folder
 
-  or
+Edit `FSWIKI_DATA_ROOT_PRIVATE` and `FSWIKI_PORT_PRIVATE` in `.env`, then
 
-  ~~~shell
-  ./run_fswiki_private.sh
-  ~~~
+~~~shell
+nerdctl compose -f docker-compose-multiple.yml up
+~~~
+
+or
+
+~~~shell
+docker-compose -f docker-compose-multiple.yml up
+~~~
+
+or
+
+~~~shell
+./run_fswiki_private.sh
+~~~
 
 ## Differences between docker-compose and shell versions
 
-- The differences are the network addresses to be assigned and IP addresses that can access the fswiki server in the docker network.
+- The differences are the network addresses to be assigned and IP addresses that can access the FSWiki server in the docker network.
   - docker-compose uses 10.0.0.0/24 and httpd accepts access only from 10.0.0.1.
   - shell version (docker build) uses 172.17.0.0/16 and httpd accepts access only from 172.17.0.1.
   - See [this page](https://github.com/KazKobara/tips-jp/blob/gh-pages/docker/subnet.md) as well (after translation from Japanese).
@@ -247,53 +311,58 @@ There are two ways to realize this, one creates new folders, the other uses one 
 
 |tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
 | :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.2|latest (4ba68e3)|Alpine \*1|5.10.60.1, 4.19.76|2.4.52 \*1|5.34.0|71.6|
-|0.0.2|3_6_5|Alpine \*1|5.10.60.1, 4.19.76|2.4.52 \*1|5.34.0|70.2|
-|0.0.1|3_6_5|Alpine \*1|4.19.76|2.4.46 \*1|5.30.3|62.1|
-|0.0.2|latest (4ba68e3)|Debian|5.10.60.1|2.4.52 \*1|5.32.1|221|
-|0.0.2|3_6_5|Debian|5.10.60.1|2.4.52 \*1|5.32.1|220|
-|0.0.1|3_6_5|Debian|4.19.76|2.4.46 \*1|5.28.1|209|
+|0.0.5|latest (4ba68e3)|Alpine 3.17 \*1|5.15.79.1|2.4.54|5.36.0|78.6|
+|0.0.5|3_6_5|Alpine 3.17 \*1|5.15.79.1|2.4.54|5.36.0|73.5|
+|0.0.5|latest (4ba68e3)|Debian 11|5.15.79.1|2.4.54|5.32.1|229|
+|0.0.5|3_6_5|Debian 11|5.15.79.1|2.4.54|5.32.1|224|
 
-> \*1 The following versions have vulnerabilities. To update, cf. the above step 3.
+> The following versions have vulnerabilities. To update, cf. the above [step 3](#3-rebuild-for-updateupgrade).
 >
-> - [httpd 2.4.53 and earlier](https://httpd.apache.org/security/vulnerabilities_24.html).
-> - OSes using [busybox 1.35 and earlier](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox).
+> - [httpd 2.4.53 and older](https://httpd.apache.org/security/vulnerabilities_24.html)
+> - [busybox 1.35.0 and older](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox)
+>   - \*1 [Status in Alpine 3.17](https://security.alpinelinux.org/branch/3.17-main): [CVE-2022-28391](https://security.alpinelinux.org/vuln/CVE-2022-28391), [CVE-2022-30065](https://security.alpinelinux.org/vuln/CVE-2022-30065).
 
-The following commands show the sizes and versions:
+The following commands show the sizes:
+
+~~~shell
+nerdctl images | grep fswiki_
+~~~
+
+or
 
 ~~~shell
 docker images | grep fswiki_
 ~~~
 
-and
+and versions:
 
 ~~~shell
-./check_versions.sh <container_name>
+./check_ver_in_container.sh <container_name>
 ~~~
 
 or the following test can show them too.
 
 ## TEST
 
-Set `FSWIKI_DATA_ROOT` in `.env` as an absolute path to test shell version.
+1. Edit the following parameters in `./test.sh`
 
-Edit the following parameters in `./test.sh`
+    ~~~shell
+    ## Uncomment one of them.
+    TEST_PLATFORM="alpine ubuntu"
+    # TEST_PLATFORM="alpine"
+    # TEST_PLATFORM="ubuntu"
 
-~~~shell
-## Edit here
-# TEST_PLATFORM="alpine ubuntu"
-TEST_PLATFORM="alpine"
+    ## Comment out if not to test
+    TEST_COMPOSE_VER="Do"
+    TEST_SHELL_VER="Do"
+    ~~~
 
-## Comment out if not to test
-TEST_DOCKER_COMPOSE="Do"
-# TEST_SHELL_VERSION="Do"
-~~~
+1. Set `FSWIKI_DATA_ROOT` in `.env` (as an absolute path to test shell version).
+1. Run
 
-then
-
-~~~shell
-./test.sh
-~~~
+    ~~~shell
+    ./test.sh
+    ~~~
 
 ## Settings
 
@@ -301,6 +370,7 @@ then
 
 To allow access from other docker containers for web security check using OWASP ZAP, Nikto and so on, edit `FSWIKI_PORT` in `.env` and set their target IP addresses to any IP address assigned to the host OS.
 
+<!--
 ### Help of Markdown Plugin with CSP, LaTeX and MathML rendering using MathJax
 
 - On your web browser displaying FSWiki launched by this docker file, click and see `Help/Markdown` in the menu (after translation from Japanese).
@@ -316,6 +386,7 @@ Or
 
 1. Open Help_Markdown_for_FreeStyleWiki.htm with your web browser
 1. (Translate Japanese to your language).
+-->
 
 <!--
 [Help/Markdown (FSWiki file)]: https://github.com/KazKobara/kati_dark/blob/main/docs/markdown/Help%252FMarkdown.wiki
@@ -327,7 +398,7 @@ Or
 
 ### Permissions and group
 
-Check and/or edit `FSWIKI_DATA_ROOT` in `.env`. Then in the same folder as `.env`, run
+Check and edit `FSWIKI_DATA_ROOT` in `.env`. Then in the same folder as `.env`, run
 
 ~~~console
 ./change_permissions.sh
@@ -340,6 +411,8 @@ If the folders are `attach/ config/ data/ log/`, the commands are as follows:
   chmod -R a-rwx,ug+rwX attach/ config/ data/ log/
   chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
   ~~~
+
+> FSWiki, however, changes the files' permission to 644 (regardless umask) and their owners to uid of httpd_sub-processes.
 
  <!--find . -type f -executable -print-->
 
@@ -354,19 +427,19 @@ where `<gid_of_httpd_sub-processes>` is
 
 > **NOTE:** `gid` is needed since `gid` may differ between host and guest of the docker container. If you change it in the container, you can use `group` name instead of `gid`.
 
-### Permission to share data volume on multiple Operating Systems
+### Permission to share data volume with multiple OSes
 
-On each OS, add the username of the httpd_sub-process of the OS to the group corresponding to the other OS, e.g., to share Alpine folders on Debian/Ubuntu:
+On each container OS, add the username of the httpd_sub-process of the OS to the group corresponding to the other OS, e.g., to share Alpine folders on Debian/Ubuntu:
 
   ~~~console
   addgroup --gid 82 www-data-alpine
-  addgroup www-data www-data-alpine
+  adduser www-data www-data-alpine
   ~~~
 
 and vice versa on Alpine:
 
   ~~~console
-  addgroup www-data xfs
+  adduser www-data xfs
   ~~~
 
 where gid of xfs is 33 whose group is www-data on Debian/Ubuntu.
@@ -375,7 +448,7 @@ where gid of xfs is 33 whose group is www-data on Debian/Ubuntu.
 
 ### 'Permission denied' or 'Lock is busy'
 
-If your web browser displays any of the following errors,
+If your web browser displays any of the following errors, check and change file permissions and group as [above](#permissions-and-group).
 
   ~~~text
   Permission denied at lib/Wiki/DefaultStorage.pm line 114.
@@ -392,8 +465,6 @@ If your web browser displays any of the following errors,
   ~~~text
   Lock is busy. at plugin/core/ShowPage.pm line 69. at lib/Util.pm line 743.
   ~~~
-
-check and change file permissions and group as above.
 
 ### Software Error
 
@@ -435,4 +506,4 @@ though CSP Hash or CSP Nonce is more ideal than 'unsafe-inline' after modificati
 ---
 
 - [https://github.com/KazKobara/](https://github.com/KazKobara/)
-- [https://kazkobara.github.io/ (mostly in Japanese)](https://kazkobara.github.io/)
+- [https://kazkobara.github.io/](https://kazkobara.github.io/)

@@ -3,6 +3,22 @@
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
 <!-- ## [Unreleased 0.0.5] -->
 
+## [0.0.5]
+
+### Security
+
+- Tested Alpine v3.17 due to the [vulnerabilities of BusyBox v1.35 and older](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox).
+
+### Added
+
+- README-jp.md
+- CONTAINER_CLI=nerdctl and COMPOSE="nerdctl compose" in .env
+
+### Changed
+
+- `check_versions.sh` to `check_ver_in_container.sh`
+  - It shows the versions of os and busybox (if used) as well.
+
 ## [0.0.4]
 
 ### Added
@@ -13,7 +29,7 @@
 
 ### Changed
 
-- Text::Markdown::Discount to prospective 0.14 to test.
+- Text::Markdown::Discount to use latest discount markdown v2maint.
 - `check_versions.sh` shows the version of markdown as well.
 - Separated change_permissions.sh from get_fswiki.sh.
 - `#!/bin/bash` to `#!/usr/bin/env bash`.

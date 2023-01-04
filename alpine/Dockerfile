@@ -40,18 +40,17 @@ ENV DEBCONF_NOWARNINGS yes
 #   and at a631dde https://github.com/Orc/discount/pull/252 has solved.
 #   Makefile.PL of "text-markdown-discount.git -b discount-2.2.7" uses
 #   the newest Discount markdown within the v2maint branch.
-# `&& addgroup www-data xfs \`
+# `&& adduser www-data xfs \`
 #    is to share data volume with Ubuntu/Debian.
 RUN apk update \
     && apk add \
         perl \
         perl-cgi-fast \
         git make gcc musl-dev perl-dev \
-    && addgroup www-data xfs \
+    && adduser www-data xfs \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org \
     && git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \
     && (cd text-markdown-discount \
-    && sed -r -i.bk 's/ && make test)/ )/;' Makefile.PL \
     && perl Makefile.PL && make && make install) \
     && apk del git make gcc musl-dev perl-dev
 #
@@ -63,6 +62,7 @@ RUN apk update \
 #    && git cherry-pick -n b002a5a \
 #
 #    && rm -rf text-markdown-discount \
+#    && sed -r -i.bk 's/ && make test)/ )/;' Makefile.PL \
 #
 # httpd runs its sub-processes as a 'www-data' user for 2.4.52
 # (or a 'daemon' user for older ones).
