@@ -196,7 +196,13 @@ nerdctl pull httpd:latest
 docker pull httpd:latest
 ~~~
 
-#### 3.2 リビルドと実行
+#### 3.2 kati_dark テーマの更新
+
+~~~shell
+(cd ./tmp/wikilatest/theme/kati_dark && git pull)
+~~~
+
+#### 3.3 リビルドと実行
 
 上記の [2. ビルドと実行](#2-ビルドと実行) を実行
 

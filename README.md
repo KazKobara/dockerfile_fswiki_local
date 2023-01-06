@@ -249,7 +249,13 @@ or
 docker pull httpd:latest
 ~~~
 
-#### 3.2 Rebuild and run
+#### 3.2 Update kati_dark theme
+
+~~~shell
+(cd ./tmp/wikilatest/theme/kati_dark && git pull)
+~~~
+
+#### 3.3 Rebuild and run
 
 Run [step 2](#2-build-and-run), depending on your environment.
 

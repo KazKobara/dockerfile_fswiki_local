@@ -1,7 +1,14 @@
 # Change Log
 
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
-<!-- ## [Unreleased 0.0.5] -->
+<!-- ## [Unreleased 0.0.6] -->
+
+## [Unreleased 0.0.6]
+
+### Changed
+
+- Commented out `theme/kati_dark` volume in docker-compose-multiple.yml.
+- Added how to update `theme/kati_dark` in README.
 
 ## [0.0.5]
 
