@@ -251,8 +251,16 @@ docker pull httpd:latest
 
 #### 3.2 Update kati_dark theme
 
+For the latest FSWiki in the git repo:
+
 ~~~shell
 (cd ./tmp/wikilatest/theme/kati_dark && git pull)
+~~~
+
+For FSWiki 3.5.6:
+
+~~~shell
+(cd ./tmp/wiki3_6_5/theme/kati_dark && git pull)
 ~~~
 
 #### 3.3 Rebuild and run

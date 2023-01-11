@@ -198,8 +198,16 @@ docker pull httpd:latest
 
 #### 3.2 kati_dark テーマの更新
 
+gitレポジトリの最新のFSWikiを使用している場合:
+
 ~~~shell
 (cd ./tmp/wikilatest/theme/kati_dark && git pull)
+~~~
+
+FSWiki 3.5.6 を使用している場合:
+
+~~~shell
+(cd ./tmp/wiki3_6_5/theme/kati_dark && git pull)
 ~~~
 
 #### 3.3 リビルドと実行
