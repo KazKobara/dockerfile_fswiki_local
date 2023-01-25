@@ -267,14 +267,14 @@ docker-compose up --no-deps --build
 
 |tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
 | :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.5|latest (4ba68e3)|Alpine 3.17 \*1|5.15.79.1|2.4.54|5.36.0|78.6|
-|0.0.5|3_6_5|Alpine 3.17 \*1|5.15.79.1|2.4.54|5.36.0|73.5|
-|0.0.5|latest (4ba68e3)|Debian 11|5.15.79.1|2.4.54|5.32.1|229|
-|0.0.5|3_6_5|Debian 11|5.15.79.1|2.4.54|5.32.1|224|
+|0.0.5|latest (4ba68e3)|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|78.6|
+|0.0.5|3_6_5|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|73.5|
+|0.0.5|latest (4ba68e3)|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|229|
+|0.0.5|3_6_5|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|224|
 
 > 以下のバージョンには脆弱性があります。アップデート方法は上記の [3. アップデート/アップグレードのためのリビルド](#3-アップデートアップグレードのためのリビルド)をご参照下さい。
 >
-> - [httpd 2.4.53 以前](https://httpd.apache.org/security/vulnerabilities_24.html)
+> - \*2 [httpd 2.4.54 以前](https://httpd.apache.org/security/vulnerabilities_24.html)
 > - [busybox 1.35 以前](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox)
 >   - \*1 [Alpine 3.17 での状況](https://security.alpinelinux.org/branch/3.17-main): [CVE-2022-28391](https://security.alpinelinux.org/vuln/CVE-2022-28391), [CVE-2022-30065](https://security.alpinelinux.org/vuln/CVE-2022-30065)
 

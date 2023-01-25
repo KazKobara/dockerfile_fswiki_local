@@ -325,14 +325,14 @@ or
 
 |tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
 | :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.5|latest (4ba68e3)|Alpine 3.17 \*1|5.15.79.1|2.4.54|5.36.0|78.6|
-|0.0.5|3_6_5|Alpine 3.17 \*1|5.15.79.1|2.4.54|5.36.0|73.5|
-|0.0.5|latest (4ba68e3)|Debian 11|5.15.79.1|2.4.54|5.32.1|229|
-|0.0.5|3_6_5|Debian 11|5.15.79.1|2.4.54|5.32.1|224|
+|0.0.5|latest (4ba68e3)|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|78.6|
+|0.0.5|3_6_5|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|73.5|
+|0.0.5|latest (4ba68e3)|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|229|
+|0.0.5|3_6_5|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|224|
 
 > The following versions have vulnerabilities. To update, cf. the above [step 3](#3-rebuild-for-updateupgrade).
 >
-> - [httpd 2.4.53 and older](https://httpd.apache.org/security/vulnerabilities_24.html)
+> - \*2 [httpd 2.4.54 and older](https://httpd.apache.org/security/vulnerabilities_24.html)
 > - [busybox 1.35.0 and older](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox)
 >   - \*1 [Status in Alpine 3.17](https://security.alpinelinux.org/branch/3.17-main): [CVE-2022-28391](https://security.alpinelinux.org/vuln/CVE-2022-28391), [CVE-2022-30065](https://security.alpinelinux.org/vuln/CVE-2022-30065).
 
