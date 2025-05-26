@@ -8,7 +8,8 @@ REQUIRE_IP=172.17.0.1
 source ./get_fswiki.sh 
 
 echo "=== docker building ==="
-docker build -f "./${FSWIKI_PLATFORM}/Dockerfile" \
+# docker build -f "./${FSWIKI_PLATFORM}/Dockerfile" \
+"${CONTAINER_CLI}" build -f "./${FSWIKI_PLATFORM}/Dockerfile" \
 	-t "fswiki_${FSWIKI_PLATFORM}_local:${FSWIKI_VERSION}" . \
 	--build-arg tag_version="${TAG_VERSION}" \
 	--build-arg fswiki_version="${FSWIKI_VERSION}" \

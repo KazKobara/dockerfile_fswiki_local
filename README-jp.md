@@ -3,7 +3,7 @@
 
 [English <img src="https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/gb.svg" width="20" alt="English" title="English"/>](./README.md)
 
-[FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi)は、Perl (とJavaScript<!-- for diffview-->)で書かれた Wikiクローンです。
+[FSWiki (FreeStyleWiki)](https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi)は、Perl (とJavaScript<!-- for diffview-->)で書かれた Wikiクローンです。
 
 ![screenshot](https://raw.githubusercontent.com/KazKobara/kati_dark/main/docs/screenshot.png "screenshot")
 
@@ -56,7 +56,7 @@ vim .env
 
 ### 2. ビルドと実行
 
-以下のステップでは、お使いの環境などとの相性に応じて、[2a. Compose版](#2a-compose版)('[docker-compose](https://docs.docker.com/compose/reference/)', '[nerdctl](https://github.com/containerd/nerdctl#command-reference) compose' などを使う版)、または、[2b. シェルスクリプト版](#2b-シェルスクリプト版)のいずれかをご使用下さい。
+以下のステップでは、お使いの環境などとの相性に応じて、[2a. Compose版](#2a-compose版)('[docker-compose](https://docs.docker.com/compose/reference/)', 'docker compose', '[nerdctl](https://github.com/containerd/nerdctl#command-reference) compose' などを使う版)、または、[2b. シェルスクリプト版](#2b-シェルスクリプト版)のいずれかをご使用下さい。
 
 また、Windows OS 上でのコマンド実行時に以下のようなウィンドウが表示された場合には、通信の許可は不要ですので、「キャンセル」ボタンをお押し下さい。
 
@@ -65,34 +65,40 @@ vim .env
 ![cancel](./data/warning.png "Push the cancel button")
 -->
 
+#### 2.1 CONTAINER_CLI コマンドの設定
+
+~~~shell
+CONTAINER_CLI=docker
+~~~
+
+または
+
+~~~shell
+CONTAINER_CLI=nerdctl
+~~~
+
+など
+
 #### 2a. Compose版
 
 #### 2a.1 イメージのビルド
 
 ~~~shell
-nerdctl compose build
-~~~
-
-または
-
-~~~shell
-docker-compose build
+"${CONTAINER_CLI}" compose build
 ~~~
 
 > - Windows版 のコマンドには `.exe` をお付け下さい。
+
+<!--
+Alpine 14.2 では症状無
 > - Alpineイメージでのビルドでは git clone に時間が掛かります。
 >   - 名前解決に時間を要しているのかもしれません。
+-->
 
 #### 2a.2 実行
 
 ~~~shell
-nerdctl compose up
-~~~
-
-または
-
-~~~shell
-docker-compose up
+"${CONTAINER_CLI}" compose up
 ~~~
 
 > バックグラウンドで実行する際には `-d` オプションを付けて下さい。
@@ -106,13 +112,7 @@ Webブラウザで `http//localhost:<ポート番号>/` へご接続下さい。
 #### 2a.4 プロセスの停止と削除
 
 ~~~shell
-nerdctl compose down
-~~~
-
-または
-
-~~~shell
-docker-compose down
+"${CONTAINER_CLI}" compose down
 ~~~
 
 #### 2b. シェルスクリプト版
@@ -123,7 +123,10 @@ docker-compose down
 ./docker_build.sh
 ~~~
 
+<!--
+Alpine 14.2 では症状無
 > - Compose版と同様に、Alpineイメージでのビルドには時間が掛かります。
+-->
 
 #### 2b.2 ローカル利用のためのWebサーバの起動
 
@@ -140,13 +143,7 @@ Webブラウザで `http//localhost:<ポート番号>/` へご接続下さい。
 #### 2b.4 プロセスの停止と削除
 
 ~~~shell
-nerdctl stop <container_name> && nerdctl rm <container_name>
-~~~
-
-または
-
-~~~shell
-docker stop <container_name> && docker rm <container_name>
+"${CONTAINER_CLI}" stop <container_name> && "${CONTAINER_CLI}" rm <container_name>
 ~~~
 
 ここで `<container_name>` は、Alpineのイメージを使う場合は `fswiki_alpine_local`、Debian/Ubuntuのイメージを使う場合は、
@@ -157,13 +154,7 @@ docker stop <container_name> && docker rm <container_name>
 #### 2b.5 イメージの削除
 
 ~~~shell
-nerdctl rmi <image_name>
-~~~
-
-または
-
-~~~shell
-docker rmi <image_name>
+"${CONTAINER_CLI}" rmi <image_name>
 ~~~
 
 ここで `<image_name>` は `<container_name>:<fswiki_version>`、 `<fswiki_version>` は `latest`、 `3_8_5` などとなります。
@@ -175,25 +166,13 @@ docker rmi <image_name>
 Alpine イメージを使っている場合:
 
 ~~~shell
-nerdctl pull httpd:alpine
-~~~
-
-または、
-
-~~~shell
-docker pull httpd:alpine
+"${CONTAINER_CLI}" pull httpd:alpine
 ~~~
 
 Debian/Ubuntu イメージを使っている場合:
 
 ~~~shell
-nerdctl pull httpd:latest
-~~~
-
-または、
-
-~~~shell
-docker pull httpd:latest
+"${CONTAINER_CLI}" pull httpd:latest
 ~~~
 
 #### 3.2 kati_dark テーマの更新
@@ -241,13 +220,7 @@ docker-compose up --no-deps --build
 1. 以下のいづれかを実行:
 
     ~~~shell
-    nerdctl compose -f docker-compose-multiple.yml up
-    ~~~
-
-    または、
-
-    ~~~shell
-    docker-compose -f docker-compose-multiple.yml up
+    "${CONTAINER_CLI}" compose -f docker-compose-multiple.yml up
     ~~~
 
     または、
@@ -265,29 +238,10 @@ docker-compose up --no-deps --build
 
 ## イメージサイズ等の違い
 
-|tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
-| :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.5|latest (4ba68e3)|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|78.6|
-|0.0.5|3_6_5|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|73.5|
-|0.0.5|latest (4ba68e3)|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|229|
-|0.0.5|3_6_5|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|224|
-
-> 以下のバージョンには脆弱性があります。アップデート方法は上記の [3. アップデート/アップグレードのためのリビルド](#3-アップデートアップグレードのためのリビルド)をご参照下さい。
->
-> - \*2 [httpd 2.4.54 以前](https://httpd.apache.org/security/vulnerabilities_24.html)
-> - [busybox 1.35 以前](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox)
->   - \*1 [Alpine 3.17 での状況](https://security.alpinelinux.org/branch/3.17-main): [CVE-2022-28391](https://security.alpinelinux.org/vuln/CVE-2022-28391), [CVE-2022-30065](https://security.alpinelinux.org/vuln/CVE-2022-30065)
-
 イメージサイズの一覧は、以下のコマンドなどで調べられます。
 
 ~~~shell
-nerdctl images | grep fswiki_
-~~~
-
-または、
-
-~~~shell
-docker images | grep fswiki_
+"${CONTAINER_CLI}" images | grep fswiki_
 ~~~
 
 バージョンは、上記コマンドで表示される `<container_name>` に対して、以下のスクリプトを実行するか、
@@ -297,6 +251,8 @@ docker images | grep fswiki_
 ~~~
 
 以下のテストを実行することで得られます。
+
+テスト済みバージョンのイメージサイズは[こちら](./data/image-sizes.md)。
 
 ## テスト
 
@@ -367,7 +323,14 @@ chgrp -R <gid_of_httpd_sub-processes> attach/ config/ data/ log/
 
   <!-- addgroup is a symbolic link of adduser  -->
 
-そして、Alpineコンテナ上では、以下のコマンドなどで Debian/Ubuntu の httpd_sub-process の gid である 33 番(xfs)のグループに Alpine の httpd_sub-process のユーザネーム www-data を追加します。
+そして、Alpineコンテナ上では、以下のコマンドなどで Debian/Ubuntu の httpd_sub-process の gid である 33 番のグループに Alpine の httpd_sub-process のユーザネーム www-data を追加します。
+
+  ~~~console
+  addgroup --gid 33 www-data-ubuntu
+  adduser www-data www-data-ubuntu
+  ~~~
+
+33 番が他のグループ(例えば xfs)に割り振られていた場合には、そのグループに Alpine の httpd_sub-process のユーザネーム www-data を追加します。
 
   ~~~console
   adduser www-data xfs

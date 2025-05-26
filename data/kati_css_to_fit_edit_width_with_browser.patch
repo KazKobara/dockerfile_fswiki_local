@@ -1,0 +1,16 @@
+diff --git a/theme/kati/kati.css b/theme/kati/kati.css
+index bf934bb..06d6877 100644
+--- a/theme/kati/kati.css
++++ b/theme/kati/kati.css
+@@ -662,4 +662,9 @@ div.sidebar .calendar{
+  h1 {padding-left: 0px;}
+  h2,h3 { font-size: medium; }
+  a { text-decoration: none; }
+-}
+\ No newline at end of file
++}
++
++/*** To fit textarea width for edit with browser ***/
++textarea.edit {
++    width: 100% !important;
++}

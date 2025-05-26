@@ -1,14 +1,25 @@
 # Change Log
 
 <!-- markdownlint-disable MD024 no-duplicate-heading -->
-<!-- ## [Unreleased 0.0.6] -->
+<!-- ## [Unreleased 0.0.7] -->
 
-## [Unreleased 0.0.6]
+## [0.0.6]
 
 ### Changed
 
+- [alpine/Dockerfile](./alpine/Dockerfile) to add `-Wno-incompatible-pointer-types` for gcc version 14.2.0 (Alpine 14.2.0) on Alpine Linux v3.21.
+- FSWiki URLs in [get_fswiki.sh](./get_fswiki.sh) to deal with the discontinuation of osdn as follows:
+  - `fswiki.osdn.jp` to `freestylewiki.sourceforge.io`
+  - `scm.osdn.net/gitroot/fswiki/` to `github.com/FreeStyleWiki/`
+- In [test.sh](./test.sh) and [.env](./.env):
+  - both `${COMPOSE}` and `${DOCKER_COMPOSE}` to `${ARR_COMPOSE}` and `${ARR_DOCKER_COMPOSE}`, respectively.
+  - `COMPOSE=docker-compose` to `ARR_COMPOSE=("${CONTAINER_CLI}" compose)`
 - Commented out `theme/kati_dark` volume in docker-compose-multiple.yml.
-- Added how to update `theme/kati_dark` in README.
+
+### Added
+
+- A patch to `theme/kati.css` to fit the edit-width with the browser.
+- How to update `theme/kati_dark` in README.
 
 ## [0.0.5]
 

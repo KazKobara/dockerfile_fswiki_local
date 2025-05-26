@@ -28,7 +28,8 @@ ARG owner_group
 ARG require_ip
 ARG fswiki_tmp_dir
 ARG fswiki_version
-ENV DEBCONF_NOWARNINGS yes
+# ENV DEBCONF_NOWARNINGS yes  # LegacyKeyValueFormat
+ENV DEBCONF_NOWARNINGS=yes
 # ca-certificates is for git (and curl/wget).
 # libtext-markdown-perl is for Text::Markdown
 #   (1.000031 as of Jan, 2022).

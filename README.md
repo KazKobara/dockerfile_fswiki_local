@@ -3,7 +3,7 @@
 
 [日本語 <img src="https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/jp.svg" width="20" alt="Japanese" title="Japanese"/>](./README-jp.md)
 
-[FSWiki (FreeStyleWiki)](https://fswiki.osdn.jp/cgi-bin/wiki.cgi) is a Wiki clone written in Perl (and JavaScript<!-- for diffview-->).
+[FSWiki (FreeStyleWiki)](https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi) is a Wiki clone written in Perl (and JavaScript<!-- for diffview-->).
 
 ![screenshot](https://raw.githubusercontent.com/KazKobara/kati_dark/main/docs/screenshot.png "screenshot")
 
@@ -25,7 +25,7 @@ and so on.
 <!-- ![markdown_screenshot](./data/markdown_screenshot.png "screenshot") -->
 
 The above is the screenshot of the following markdown document (in a markdown block of FSWiki
-in the ['kati_dark' theme](https://github.com/KazKobara/kati_dark "https://github.com/KazKobara/kati_dark (in Japanese)") where other themes are available from [here](https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 (in Japanese)").
+in the ['kati_dark' theme](https://github.com/KazKobara/kati_dark "https://github.com/KazKobara/kati_dark (in Japanese)") where other themes are available from [here](https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 "https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?page=%A5%C6%A1%BC%A5%DE%B0%EC%CD%F7 (in Japanese)").
 
 <!--
 Including "'markdown' in double curly braces", the tag to identify markdown blocks in FSWiki, here and below causes 
@@ -122,33 +122,39 @@ If they pop up the following window on Windows OS, click the "cancel" button to 
 ![cancel](./data/warning.png "Push the cancel button")
 -->
 
+#### 2.1 Set CONTAINER_CLI command
+
+~~~shell
+CONTAINER_CLI=docker
+~~~
+
+or
+
+~~~shell
+CONTAINER_CLI=nerdctl
+~~~
+
+and so on.
+
 ### 2a Compose Version
 
 #### 2a.1 Build image
 
 ~~~shell
-nerdctl compose build
-~~~
-
-or
-
-~~~shell
-docker-compose build
+"${CONTAINER_CLI}" compose build
 ~~~
 
 > - On Windows OS, add `.exe` after the command.
+
+<!--
+At least Alpine 14.2 has solved this:
 > - Building the image on Alpine takes time in `git clone`, presumably to resolve FQDN.
+-->
 
 #### 2a.2 Run
 
 ~~~shell
-nerdctl compose up
-~~~
-
-or
-
-~~~shell
-docker-compose up
+"${CONTAINER_CLI}" compose up
 ~~~
 
 > To run it in the background, add `-d` option.
@@ -160,13 +166,7 @@ With your web browser, access `http//localhost:<FSWIKI_PORT>/`, such as `http//l
 #### 2a.4 Stop and remove the process
 
 ~~~shell
-nerdctl compose down
-~~~
-
-or
-
-~~~shell
-docker-compose down
+"${CONTAINER_CLI}" compose down
 ~~~
 
 ### 2b. Shell Script Version
@@ -177,7 +177,10 @@ docker-compose down
 ./docker_build.sh
 ~~~
 
+<!--
+At least Alpine 14.2 has solved this:
 > Building the image on Alpine takes time, similar to the compose version.
+-->
 
 #### 2b.2 Run server for local use
 
@@ -192,13 +195,7 @@ With your web browser, access `http//localhost:<FSWIKI_PORT>/`, such as `http//l
 #### 2b.4 Stop and remove the process
 
 ~~~shell
-nerdctl stop <container_name> && nerdctl rm <container_name>
-~~~
-
-or
-
-~~~shell
-docker stop <container_name> && docker rm <container_name>
+"${CONTAINER_CLI}" stop <container_name> && "${CONTAINER_CLI}" rm <container_name>
 ~~~
 
 where `<container_name>` is `fswiki_alpine_local` for Alpine image or   `fswiki_ubuntu_local` for Debian/Ubuntu image.
@@ -208,13 +205,7 @@ where `<container_name>` is `fswiki_alpine_local` for Alpine image or   `fswiki_
 #### 2b.5 Remove the image
 
 ~~~shell
-nerdctl rmi <image_name>
-~~~
-
-or
-
-~~~shell
-docker rmi <image_name>
+"${CONTAINER_CLI}" rmi <image_name>
 ~~~
 
 where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version>` is `latest`, `3_8_5`, and os on.
@@ -228,25 +219,13 @@ where `<image_name>` is `<container_name>:<fswiki_version>` and `<fswiki_version
 For Alpine image:
 
 ~~~shell
-nerdctl pull httpd:alpine
-~~~
-
-or
-
-~~~shell
-docker pull httpd:alpine
+"${CONTAINER_CLI}" pull httpd:alpine
 ~~~
 
 For Debian/Ubuntu image:
 
 ~~~shell
-nerdctl pull httpd:latest
-~~~
-
-or
-
-~~~shell
-docker pull httpd:latest
+"${CONTAINER_CLI}" pull httpd:latest
 ~~~
 
 #### 3.2 Update kati_dark theme
@@ -269,13 +248,7 @@ Run [step 2](#2-build-and-run), depending on your environment.
 
 <!--
 ~~~shell
-nerdctl compose up --no-deps --build
-~~~
-
-or
-
-~~~shell
-docker-compose up --no-deps --build
+"${CONTAINER_CLI}" compose up --no-deps --build
 ~~~
 -->
 
@@ -299,13 +272,7 @@ There are two ways to realize this, one creates a [new folder](#method-1-new-fol
 Edit `FSWIKI_DATA_ROOT_PRIVATE` and `FSWIKI_PORT_PRIVATE` in `.env`, then
 
 ~~~shell
-nerdctl compose -f docker-compose-multiple.yml up
-~~~
-
-or
-
-~~~shell
-docker-compose -f docker-compose-multiple.yml up
+"${CONTAINER_CLI}" compose -f docker-compose-multiple.yml up
 ~~~
 
 or
@@ -323,29 +290,10 @@ or
 
 ## Docker Image Sizes
 
-|tag_version|fswiki|base|kernel|httpd|perl|Image Size[MB]|
-| :---: | :---: | :--- | ---: | ---: | ---: | ---: |
-|0.0.5|latest (4ba68e3)|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|78.6|
-|0.0.5|3_6_5|Alpine 3.17 \*1|5.15.79.1|2.4.54 \*2|5.36.0|73.5|
-|0.0.5|latest (4ba68e3)|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|229|
-|0.0.5|3_6_5|Debian 11|5.15.79.1|2.4.54 \*2|5.32.1|224|
-
-> The following versions have vulnerabilities. To update, cf. the above [step 3](#3-rebuild-for-updateupgrade).
->
-> - \*2 [httpd 2.4.54 and older](https://httpd.apache.org/security/vulnerabilities_24.html)
-> - [busybox 1.35.0 and older](https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=busybox)
->   - \*1 [Status in Alpine 3.17](https://security.alpinelinux.org/branch/3.17-main): [CVE-2022-28391](https://security.alpinelinux.org/vuln/CVE-2022-28391), [CVE-2022-30065](https://security.alpinelinux.org/vuln/CVE-2022-30065).
-
 The following commands show the sizes:
 
 ~~~shell
-nerdctl images | grep fswiki_
-~~~
-
-or
-
-~~~shell
-docker images | grep fswiki_
+"${CONTAINER_CLI}" images | grep fswiki_
 ~~~
 
 and versions:
@@ -355,6 +303,8 @@ and versions:
 ~~~
 
 or the following test can show them too.
+
+Image sizes of tested versions are [here](./data/image-sizes.md).
 
 ## TEST
 
@@ -453,10 +403,15 @@ On each container OS, add the username of the httpd_sub-process of the OS to the
 and vice versa on Alpine:
 
   ~~~console
-  adduser www-data xfs
+  addgroup --gid 33 www-data-ubuntu
+  adduser www-data www-data-ubuntu
   ~~~
 
-where gid of xfs is 33 whose group is www-data on Debian/Ubuntu.
+If Alpine has already used gid 33 for a group, say xfs group, add www-data, the user name of httpd_sub-process, to the xfs group:
+
+  ~~~console
+  adduser www-data xfs
+  ~~~
 
 ## Trouble-shooting
 

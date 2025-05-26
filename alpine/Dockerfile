@@ -28,7 +28,8 @@ ARG owner_group
 ARG require_ip
 ARG fswiki_tmp_dir
 ARG fswiki_version
-ENV DEBCONF_NOWARNINGS yes
+# ENV DEBCONF_NOWARNINGS yes  # LegacyKeyValueFormat
+ENV DEBCONF_NOWARNINGS=yes
 # `&& git make gcc musl-dev perl-dev \` are for Text::Markdown::Discount 0.13 or later
 # `&& git cherry-pick b002a5a \` is to fix https://github.com/Orc/discount/issues/189 .
 # `&& git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \`
@@ -41,16 +42,25 @@ ENV DEBCONF_NOWARNINGS yes
 #   Makefile.PL of "text-markdown-discount.git -b discount-2.2.7" uses
 #   the newest Discount markdown within the v2maint branch.
 # `&& adduser www-data xfs \`
-#    is to share data volume with Ubuntu/Debian.
+#   or for Alpine Linux v3.21 and newer
+# `&& addgroup --gid 33 www-data-ubuntu \
+# `&& adduser www-data www-data-ubuntu \
+#   are to share data volume with Ubuntu/Debian.
+# `&& sed -i 's/cc -fPIC/cc -fPIC -Wno-incompatible-pointer-types/' Makefile.PL \` after `&& (cd text-markdown-discount \`
+#   is for gcc version 14.2.0 (Alpine 14.2.0) on Alpine Linux v3.21.
+# `&& sed -i 's/v2maint/v3.0.0d/' Makefile.PL \` after `&& (cd text-markdown-discount \`
+#   to try another tag or branch. 
 RUN apk update \
     && apk add \
         perl \
         perl-cgi-fast \
         git make gcc musl-dev perl-dev \
-    && adduser www-data xfs \
+    && addgroup --gid 33 www-data-ubuntu \
+    && adduser www-data www-data-ubuntu \
     && mv /usr/local/apache2/htdocs /usr/local/apache2/htdocs_org \
     && git clone https://github.com/KazKobara/text-markdown-discount.git -b discount-2.2.7 --depth 1 \
     && (cd text-markdown-discount \
+    && sed -i 's/cc -fPIC/cc -fPIC -Wno-incompatible-pointer-types/' Makefile.PL \
     && perl Makefile.PL && make && make install) \
     && apk del git make gcc musl-dev perl-dev
 #

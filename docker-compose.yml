@@ -1,4 +1,5 @@
-version: '3.7'
+# version: '3.7'
+# the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion
 
 # This file is a part of
 # https://github.com/KazKobara/dockerfile_fswiki_local .

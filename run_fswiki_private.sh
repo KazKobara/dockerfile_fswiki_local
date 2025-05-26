@@ -15,7 +15,8 @@ FSWIKI_DATA_ROOT="${FSWIKI_DATA_ROOT/.\//${PWD}/}"
 
 echo "FSWIKI_DATA_ROOT: ${FSWIKI_DATA_ROOT}"
 
-docker run --restart always \
+# docker run --restart always \
+"${CONTAINER_CLI}" run --restart always \
        -d -p "${FSWIKI_PORT_PRIVATE}:80" \
        -v "${FSWIKI_DATA_ROOT}/data":/usr/local/apache2/htdocs/data \
        -v "${FSWIKI_DATA_ROOT}/attach":/usr/local/apache2/htdocs/attach \

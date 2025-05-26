@@ -1,4 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
+# .env uses array that does not work on sh.
+#
 # Script to check versions in a container
 # (maintained at https://github.com/KazKobara/dockerfile_fswiki_local )
 

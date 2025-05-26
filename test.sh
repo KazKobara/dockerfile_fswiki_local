@@ -17,7 +17,7 @@ TEST_TMP=.test.tmp
 
 ### check ###
 
-if [ -z "${TEST_COMPOSE_VER+x}" ] && [ -z "${TEST_SHELL_VER+x}" ]; then  # if not defiend
+if [ -z "${TEST_COMPOSE_VER+x}" ] && [ -z "${TEST_SHELL_VER+x}" ]; then  # if not defined
 	echo
 	echo " Error: either 'TEST_COMPOSE_VER' or 'TEST_SHELL_VER' should be defined!!"
 	exit 1
@@ -56,23 +56,23 @@ check_wget () {
 
 ### main ###
 source .env
-if [ "${COMPOSE}" == "docker-compose" ]; then
-	DOCKER_COMPOSE=""
+# set ARR_DOCKER_COMPOSE using ARR_COMPOSE in .env
+# echo "ARR_COMPOSE: ${ARR_COMPOSE[*]}"
+if [ "${ARR_COMPOSE[*]}" == "docker-compose" ]; then
 	if [ -n "${TEST_COMPOSE_VER+x}" ]; then  # if defined
 		if command -v docker-compose; then
-			DOCKER_COMPOSE="docker-compose"
+			ARR_DOCKER_COMPOSE=("docker-compose")
+		elif command -v docker-compose.exe; then
+			ARR_DOCKER_COMPOSE=("docker-compose.exe")
 		else
-			if command -v docker-compose.exe; then
-				DOCKER_COMPOSE="docker-compose.exe"
-			else
-				echo
-				echo "WARNING: no docker-compose command found and skip them!!"
-				echo
-			fi
+			ARR_DOCKER_COMPOSE=()
+			echo
+			echo "WARNING: no docker-compose command found and skipped!!"
+			echo
 		fi
 	fi
 else
-	DOCKER_COMPOSE="${COMPOSE}"
+	ARR_DOCKER_COMPOSE=("${ARR_COMPOSE[@]}")
 fi
 
 cp -pf .env .env.org
@@ -86,7 +86,8 @@ for f_platform in ${TEST_PLATFORM} ;do
 			f_ver_rem=""		
 		fi
 		sed -i "/^FSWIKI_VERSION=/cFSWIKI_VERSION=$f_version" .env
-		if [ "$DOCKER_COMPOSE" != "" ]; then
+		# echo "ARR_DOCKER_COMPOSE: ${ARR_DOCKER_COMPOSE[*]}"
+		if [ -n "${TEST_COMPOSE_VER+x}" ] && [ "${ARR_DOCKER_COMPOSE[*]}" != "" ]; then
 	    	echo
 		    echo "=== Compose version ==="
 		    container_pre_name=fswiki_${f_platform}_local_dc
@@ -94,14 +95,14 @@ for f_platform in ${TEST_PLATFORM} ;do
 	    	image_name=$container_pre_name:$f_version
 		    check_and_remove "$container_name" "$image_name"
 		    ./get_fswiki.sh
-	    	$DOCKER_COMPOSE up -d
+	        "${ARR_DOCKER_COMPOSE[@]}" up -d
 		    echo
 		    echo "=== Versions of $image_name ===$f_ver_rem"         | tee -a $TEST_TMP
 			# ./check_versions.sh "$container_name"                    | tee -a $TEST_TMP
 			./check_ver_in_container.sh "$container_name"            | tee -a $TEST_TMP
 		    echo "-------------------------------------------------" | tee -a $TEST_TMP
 		    check_wget
-	    	$DOCKER_COMPOSE down
+	        "${ARR_DOCKER_COMPOSE[@]}" down
 		fi
 		if [ -n "${TEST_SHELL_VER+x}" ]; then  # if defined
 			echo

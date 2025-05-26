@@ -31,15 +31,17 @@ PATCH_COMMAND="git --git-dir= apply"
 apply_patches () {
  	mkdir -p ../patches
     ## Check 'search in content' check box with config/config.dat.
-    ## https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=BugTrack%2Drequest%2F109
+    ## https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?page=BugTrack%2Drequest%2F109
     if [ ! -e ../patches/search_in_content_control_in_config_dat.patch ]; then
-	    curl -o ../patches/search_in_content_control_in_config_dat.patch "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=BugTrack%2Drequest%2F109&file=search%5Fin%5Fcontent%5Fcontrol%5Fin%5Fconfig%5Fdat%2Epatch&action=ATTACH"
+	    curl -o ../patches/search_in_content_control_in_config_dat.patch \
+            "https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?page=BugTrack%2Drequest%2F109&file=search%5Fin%5Fcontent%5Fcontrol%5Fin%5Fconfig%5Fdat%2Epatch&action=ATTACH"
     fi
     $PATCH_COMMAND ../patches/search_in_content_control_in_config_dat.patch
     ## Patch for 'value or values' warning.
-    ## https://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=BBS%2D%A5%B5%A5%DD%A1%BC%A5%C8%B7%C7%BC%A8%C8%C4%2F997
+    ## https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?page=BBS%2D%A5%B5%A5%DD%A1%BC%A5%C8%B7%C7%BC%A8%C8%C4%2F997
     if [ ! -e ../patches/value_or_values_in_lib_CGI2_pm.patch ]; then
-	    curl -o ../patches/value_or_values_in_lib_CGI2_pm.patch "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?action=ATTACH&file=value%5For%5Fvalues%5Fin%5Flib%5FCGI2%5Fpm%2Epatch&page=BBS%2D%A5%B5%A5%DD%A1%BC%A5%C8%B7%C7%BC%A8%C8%C4%2F997"
+	    curl -o ../patches/value_or_values_in_lib_CGI2_pm.patch \
+            "https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?action=ATTACH&file=value%5For%5Fvalues%5Fin%5Flib%5FCGI2%5Fpm%2Epatch&page=BBS%2D%A5%B5%A5%DD%A1%BC%A5%C8%B7%C7%BC%A8%C8%C4%2F997"
     fi
     $PATCH_COMMAND ../patches/value_or_values_in_lib_CGI2_pm.patch
     ## Add customized files.
@@ -49,7 +51,7 @@ apply_patches () {
     fi
     # favicon.ico
     if [ ! -e "./favicon.ico" ]; then
-        # curl -o favicon.ico "http://fswiki.osdn.jp/cgi-bin/wiki.cgi?page=BBS%2D%BB%A8%C3%CC%B7%C7%BC%A8%C8%C4%2F131&action=ATTACH&file=aki2%2Eico"
+        # curl -o favicon.ico "http://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?page=BBS%2D%BB%A8%C3%CC%B7%C7%BC%A8%C8%C4%2F131&action=ATTACH&file=aki2%2Eico"
         cp -p ../../data/favicon.ico .
     fi
     # .htaccess
@@ -76,6 +78,8 @@ apply_patches () {
     if [ ! -e "./theme/resources/diff.js" ]; then
         cp -p ../../data/diff.js ./theme/resources/diff.js
     fi
+    ## theme/kati.css
+    $PATCH_COMMAND ../../data/kati_css_to_fit_edit_width_with_browser.patch
     ##### Plugin #####
     ## Default Off
     #for p in markdown rename; do
@@ -103,13 +107,24 @@ pushd "$(pwd)" || exit 2
 cd "${FSWIKI_TMP_DIR}/" || { echo "ERROR: could not 'cd ${FSWIKI_TMP_DIR}/'!!"; exit 1; }
 if [ ! -e "${FSWIKI_SOURCE_DIR}" ]; then
     if [ "$FSWIKI_VERSION" == "latest" ]; then
-	    git clone --depth 1 https://scm.osdn.net/gitroot/fswiki/fswiki.git "${FSWIKI_SOURCE_DIR}"
+	    # git clone --depth 1 https://scm.osdn.net/gitroot/fswiki/fswiki.git "${FSWIKI_SOURCE_DIR}"
+        git clone --depth 1 https://github.com/FreeStyleWiki/fswiki.git "${FSWIKI_SOURCE_DIR}"
     else
         if [ ! -e "${FSWIKI_ZIP}" ]; then
-            curl -OL "https://ja.osdn.net/projects/fswiki/downloads/69263/${FSWIKI_ZIP}"
+            # curl -OL "https://ja.osdn.net/projects/fswiki/downloads/69263/${FSWIKI_ZIP}"
             # wget "https://ja.osdn.net/projects/fswiki/downloads/69263/${FSWIKI_ZIP}"
+            if [ "${FSWIKI_VERSION}" == "latest" ]; then
+                curl -o "${FSWIKI_ZIP}" -L "https://github.com/FreeStyleWiki/fswiki/archive/refs/heads/master.zip"
+            else
+                curl -o "${FSWIKI_ZIP}" -L "https://github.com/FreeStyleWiki/fswiki/archive/refs/tags/fs${FSWIKI_ZIP}"
+                # curl -o "${FSWIKI_ZIP}" -L "https://github.com/FreeStyleWiki/fswiki/archive/refs/tags/fswiki${FSWIKI_VERSION}.zip"
+            fi
         fi
         unzip "./${FSWIKI_ZIP}"
+        # for github archive
+        if [ ! -d "${FSWIKI_SOURCE_DIR}" ] && [ -d fswiki-fs"${FSWIKI_SOURCE_DIR}" ]; then
+            mv fswiki-fs"${FSWIKI_SOURCE_DIR}" "${FSWIKI_SOURCE_DIR}"
+        fi
     fi
     (cd "${FSWIKI_SOURCE_DIR}" && apply_patches)
 elif [ ! -d "${FSWIKI_SOURCE_DIR}" ]; then
@@ -201,7 +216,8 @@ pushd "$(pwd)" || exit 2
     cd "./plugin/" || { echo "ERROR: could not 'cd ./plugin/'!!"; exit 1; }
     if [ ! -e "./markdown" ]; then
         if [ ! -e "${MARKDOWN_ZIP}" ]; then
-            curl -o "${MARKDOWN_ZIP}" "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?file=markdown%5F20120714%2Ezip&page=BugTrack%2Dplugin%2F417&action=ATTACH"
+            # curl -o "${MARKDOWN_ZIP}" "https://fswiki.osdn.jp/cgi-bin/wiki.cgi?file=markdown%5F20120714%2Ezip&page=BugTrack%2Dplugin%2F417&action=ATTACH"
+            curl -o "${MARKDOWN_ZIP}" "https://freestylewiki.sourceforge.io/cgi-bin/wiki.cgi?file=markdown%5F20120714%2Ezip&page=BugTrack%2Dplugin%2F417&action=ATTACH"
         fi
         unzip "./${MARKDOWN_ZIP}"
         # Apply a patch for Discount
