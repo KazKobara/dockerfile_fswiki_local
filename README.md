@@ -302,7 +302,9 @@ and versions:
 ./check_ver_in_container.sh <container_name>
 ~~~
 
-or the following test can show them too.
+where `<container_name>` can be obtained as `NAMES` by the `"${CONTAINER_CLI}" ps` command.
+
+Or the following test shows them too.
 
 Image sizes of tested versions are [here](./data/image-sizes.md).
 

@@ -238,19 +238,19 @@ docker-compose up --no-deps --build
 
 ## イメージサイズ等の違い
 
-イメージサイズの一覧は、以下のコマンドなどで調べられます。
+イメージサイズの一覧は、以下のコマンドで調べられます。
 
 ~~~shell
 "${CONTAINER_CLI}" images | grep fswiki_
 ~~~
 
-バージョンは、上記コマンドで表示される `<container_name>` に対して、以下のスクリプトを実行するか、
+バージョンは、`"${CONTAINER_CLI}" ps` コマンドで表示される `<container_name>` (`NAMES`)に対して、以下のスクリプトを実行することで得られます。
 
 ~~~shell
 ./check_ver_in_container.sh <container_name>
 ~~~
 
-以下のテストを実行することで得られます。
+サイズとバージョンは、以下のテストを実行することでも得られます。
 
 テスト済みバージョンのイメージサイズは[こちら](./data/image-sizes.md)。
 
